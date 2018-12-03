@@ -6,9 +6,11 @@ VR (All 3)
 We will be using the OpenVR APIs and “Device Pose” system to implement the functionality of
 the controllers- we will be throwing the fireballs where the user holds down the controller
 button to create the fireball, and released the button to release the fireball.
+
 https://skarredghost.com/2018/03/15/introduction-to-openvr-101-series-what-is-openvr-and-how-to-get-started-with-its-apis/
 https://github.com/ValveSoftware/openvr/tree/master/samples
 https://github.com/osudrl/CassieVrControls/wiki/OpenVR-Quick-Start
+
 
 Collision Detection (Dain)
 Only the fireball will be moving, thus all the collision detection and physics will be built around just the
@@ -26,10 +28,12 @@ and check if it’s within a certain distance. If it is, we can do a more intens
 shares any region with the fireball - causing a collision.
 We could accomplish this using a similar system to intersect, by converting the object into the object
 space of the sphere and checking collisions in that space.
+
 Resources we will be using:
 https://learnopengl.com/In-Practice/2D-Game/Collisions/Collision-detection
 http://www.peroxide.dk/papers/collision/collision.pdf
 http://www.videotutorialsrock.com/opengl_tutorial/collision_detection/text.php
+
 
 Deferred Lighting and Particles 
 Particles should be simple, as we are essentially using what we learned from the particles lab, with
@@ -41,10 +45,12 @@ expensive process, especially because we are working in a 3D scene. Therefore, I
 lighting by essentially making a single pass to render the geometry of the scene first, store the
 information in a collection of textures called the G-buffer, and then make another pass to light the
 scene, and do this for every frame.
+
 Resources we will be using:
 Geometry rendering and lighting from class (like shapes and scenview)
 https://learnopengl.com/Advanced-Lighting/Deferred-Shading
 http://ogldev.atspace.co.uk/www/tutorial35/tutorial35.html
+
 
 Terrain (Julie)
 We will be making an outdoor terrain with tall, thin mountains, like the setting of the final fight in Avatar
@@ -53,13 +59,11 @@ using the 3-dimensional version of the midpoint displacement algorithm to proced
 terrain. We will be generating heightmaps, which we will then convert into 3D meshes, which we finally
 will be rendering into 3D objects in our VR space. We will start with basic colors for the terrain, and
 eventually apply shaders and texture mapping for more realistic effect.
+
 Resources we will be using:
-http://www.gamasutra.com/view/feature/1648/random_scattering_creating_.php?fbclid=IwAR1clKFAF
-b-pPd1KY5LzbXZnF0L368xN6J_ByCrrpd4rjggd_KzgCgjQkdw
-http://pcg.wikidot.com/?fbclid=IwAR1SOZNfqH1Qg2cBm9aPEZv6N0AnaUflQqsLqFnG_2sI4GivvJdxo4coc
-xU
-http://pcg.wikidot.com/category-pcg-
-algorithms?fbclid=IwAR0wAtNLRKRH5FVuM8tUPgyVV4mxQSmNHkC1CZ9Sbtp2Hdn8Ha9yCKhTJsc
+http://www.gamasutra.com/view/feature/1648/random_scattering_creating_.php?fbclid=IwAR1clKFAFb-pPd1KY5LzbXZnF0L368xN6J_ByCrrpd4rjggd_KzgCgjQkdw
+http://pcg.wikidot.com/?fbclid=IwAR1SOZNfqH1Qg2cBm9aPEZv6N0AnaUflQqsLqFnG_2sI4GivvJdxo4cocxU
+http://pcg.wikidot.com/category-pcg-algorithms?fbclid=IwAR0wAtNLRKRH5FVuM8tUPgyVV4mxQSmNHkC1CZ9Sbtp2Hdn8Ha9yCKhTJsc
 
 
 Program Flow
