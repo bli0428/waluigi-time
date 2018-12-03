@@ -1,4 +1,4 @@
-# waluigi-time
+# CS1230 Final Project
 CS1230 Final Project Plan
 
 Features:
