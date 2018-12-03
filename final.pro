@@ -51,7 +51,15 @@ SOURCES += \
     ui/mainwindow.cpp \
     glew-1.10.0/src/glew.c \
     main.cpp \
-    camera/QuaternionCamera.cpp
+    camera/QuaternionCamera.cpp \
+    shapes/cone.cpp \
+    shapes/Cube.cpp \
+    shapes/cylinder.cpp \
+    shapes/OpenGLShape.cpp \
+    shapes/shapeutil.cpp \
+    shapes/sphere.cpp \
+    shapes/squareringdrawer.cpp \
+    shapes/trianglestripdrawer.cpp
 
 HEADERS += \
     gl/shaders/Shader.h \
@@ -82,7 +90,15 @@ HEADERS += \
     ui/viewformat.h \
     ui/mainwindow.h \
     glew-1.10.0/include/GL/glew.h \
-    camera/QuaternionCamera.h
+    camera/QuaternionCamera.h \
+    shapes/cone.h \
+    shapes/Cube.h \
+    shapes/cylinder.h \
+    shapes/OpenGLShape.h \
+    shapes/shapeutil.h \
+    shapes/sphere.h \
+    shapes/squareringdrawer.h \
+    shapes/trianglestripdrawer.h
 
 DEFINES += _USE_MATH_DEFINES
 DEFINES += TIXML_USE_STL

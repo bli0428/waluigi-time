@@ -2,7 +2,10 @@
 #define SCENEVIEWSCENE_H
 
 #include "OpenGLScene.h"
-
+#include "Cube.h"
+#include "cylinder.h"
+#include "sphere.h"
+#include "cone.h"
 #include <memory>
 
 
@@ -57,6 +60,10 @@ private:
     void renderGeometry();
 
     std::unique_ptr<CS123::GL::CS123Shader> m_phongShader;
+    std::unique_ptr<Cube> m_cube;
+    std::unique_ptr<Sphere> m_sphere;
+    std::unique_ptr<Cylinder> m_cylinder;
+    std::unique_ptr<Cone> m_cone;
 
 };
 
