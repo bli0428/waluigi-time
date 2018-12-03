@@ -2,11 +2,13 @@
 CS1230 Final Project Plan
 
 Features:
+
 VR (All 3)
 We will be using the OpenVR APIs and “Device Pose” system to implement the functionality of
 the controllers- we will be throwing the fireballs where the user holds down the controller
 button to create the fireball, and released the button to release the fireball.
 
+Resources we will be using:
 https://skarredghost.com/2018/03/15/introduction-to-openvr-101-series-what-is-openvr-and-how-to-get-started-with-its-apis/
 https://github.com/ValveSoftware/openvr/tree/master/samples
 https://github.com/osudrl/CassieVrControls/wiki/OpenVR-Quick-Start
