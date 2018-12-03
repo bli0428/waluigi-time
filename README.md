@@ -85,30 +85,42 @@ collision detection section. Lastly, the fireballs themselves will emit light th
 sections of the terrain for more realistic effect.
 
 
+
 Project timeline
 
+
 11/26
+
 Play around with VR stencil
 
 11/28
+
 Start working on project (Terrain, Collision Detection, Deferred Lighting)
 
 12/3
+
 Finish basic implementations-start combining code
+
 Finish procedurally generated terrain- start working on adding color and lighting
-Finish collision detection of sphere with arbitrary objects – combine with procedural generated
-terrain
+
+Finish collision detection of sphere with arbitrary objects – combine with procedural generated terrain
+
 Finish code for sphere lighting up sceneview-like scene
 
 12/5
+
 Add particles and lighting to sphere to simulate fireball
 
 12/7
+
 Complete finishing touches- status update
+
 Start working on adding in VR controls
 
 12/12
+
 Finish project
+
 Start working on possible stretch features
 
 12/15
