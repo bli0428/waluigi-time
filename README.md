@@ -15,6 +15,8 @@ https://github.com/ValveSoftware/openvr/tree/master/samples
 https://github.com/osudrl/CassieVrControls/wiki/OpenVR-Quick-Start
 
 
+
+
 Collision Detection (Dain)
 
 Only the fireball will be moving, thus all the collision detection and physics will be built around just the
@@ -40,6 +42,8 @@ http://www.peroxide.dk/papers/collision/collision.pdf
 http://www.videotutorialsrock.com/opengl_tutorial/collision_detection/text.php
 
 
+
+
 Deferred Lighting and Particles 
 
 Particles should be simple, as we are essentially using what we learned from the particles lab, with
@@ -59,6 +63,8 @@ https://learnopengl.com/Advanced-Lighting/Deferred-Shading
 http://ogldev.atspace.co.uk/www/tutorial35/tutorial35.html
 
 
+
+
 Terrain (Julie)
 
 We will be making an outdoor terrain with tall, thin mountains, like the setting of the final fight in Avatar
@@ -75,6 +81,8 @@ http://pcg.wikidot.com/?fbclid=IwAR1SOZNfqH1Qg2cBm9aPEZv6N0AnaUflQqsLqFnG_2sI4Gi
 http://pcg.wikidot.com/category-pcg-algorithms?fbclid=IwAR0wAtNLRKRH5FVuM8tUPgyVV4mxQSmNHkC1CZ9Sbtp2Hdn8Ha9yCKhTJsc
 
 
+
+
 Program Flow
 
 The finished product will be a Virtual reality game in which the user is standing within a procedurally-
@@ -86,6 +94,7 @@ sections of the terrain for more realistic effect.
 
 
 
+
 Project timeline
 
 
@@ -93,9 +102,11 @@ Project timeline
 
 Play around with VR stencil
 
+
 11/28
 
 Start working on project (Terrain, Collision Detection, Deferred Lighting)
+
 
 12/3
 
@@ -107,9 +118,11 @@ Finish collision detection of sphere with arbitrary objects – combine with pro
 
 Finish code for sphere lighting up sceneview-like scene
 
+
 12/5
 
 Add particles and lighting to sphere to simulate fireball
+
 
 12/7
 
@@ -117,11 +130,13 @@ Complete finishing touches- status update
 
 Start working on adding in VR controls
 
+
 12/12
 
 Finish project
 
 Start working on possible stretch features
+
 
 12/15
 Hand in final project
