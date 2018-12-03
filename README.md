@@ -1,5 +1,5 @@
 # CS1230 Final Project
-CS1230 Final Project Plan
+Final Project Plan:
 
 Features:
 
