@@ -84,7 +84,9 @@ will collide with both terrain and targets, where they will bounce or be destroy
 collision detection section. Lastly, the fireballs themselves will emit light that will light up nearby
 sections of the terrain for more realistic effect.
 
+
 Project timeline
+
 11/26
 Play around with VR stencil
 
