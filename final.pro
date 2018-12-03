@@ -8,66 +8,144 @@ TEMPLATE = app
 QMAKE_CXXFLAGS += -std=c++14
 CONFIG += c++14
 
-unix:!macx {
-    LIBS += -lGLU
-}
-macx {
-    QMAKE_CFLAGS_X86_64 += -mmacosx-version-min=10.7
-    QMAKE_CXXFLAGS_X86_64 = $$QMAKE_CFLAGS_X86_64
-    CONFIG += c++11
-}
 win32 {
     DEFINES += GLEW_STATIC
     LIBS += -lopengl32 -lglu32
 }
 
-SOURCES += ui/mainwindow.cpp \
-    main.cpp \
-    glew-1.10.0/src/glew.c \
+macx {
+    QMAKE_CFLAGS_X86_64 += -mmacosx-version-min=10.7
+    QMAKE_CXXFLAGS_X86_64 = $$QMAKE_CFLAGS_X86_64
+    CONFIG += c++11
+}
+
+linux {
+    # fixes an issue with linux and vr libraries
+    QMAKE_CXXFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
+}
+
+SOURCES += \
+    gl/shaders/Shader.cpp \
+    gl/GLDebug.cpp \
+    gl/datatype/VBOAttribMarker.cpp \
+    gl/datatype/VBO.cpp \
+    gl/datatype/IBO.cpp \
+    gl/datatype/VAO.cpp \
+    gl/datatype/FBO.cpp \
+    gl/textures/Texture.cpp \
+    gl/textures/Texture2D.cpp \
+    gl/textures/TextureParameters.cpp \
+    gl/textures/TextureParametersBuilder.cpp \
+    gl/textures/RenderBuffer.cpp \
+    gl/textures/DepthBuffer.cpp \
+    gl/shaders/CS123Shader.cpp \
+    gl/shaders/GBufferShader.cpp \
+    gl/util/FullScreenQuad.cpp \
+    lib/CS123XmlSceneParser.cpp \
+    lib/ResourceLoader.cpp \
+    scenegraph/Scene.cpp \
+    scenegraph/OpenGLScene.cpp \
+    scenegraph/SceneviewScene.cpp \
     ui/view.cpp \
-    ui/viewformat.cpp
+    ui/viewformat.cpp \
+    ui/mainwindow.cpp \
+    glew-1.10.0/src/glew.c \
+    main.cpp \
+    camera/QuaternionCamera.cpp
 
-HEADERS += ui/mainwindow.h \
-    ui_mainwindow.h \
-    glew-1.10.0/include/GL/glew.h \
+HEADERS += \
+    gl/shaders/Shader.h \
+    gl/GLDebug.h \
+    gl/shaders/ShaderAttribLocations.h \
+    gl/datatype/VBOAttribMarker.h \
+    gl/datatype/VBO.h \
+    gl/datatype/IBO.h \
+    gl/datatype/VAO.h \
+    gl/datatype/FBO.h \
+    gl/textures/Texture.h \
+    gl/textures/Texture2D.h \
+    gl/textures/TextureParameters.h \
+    gl/textures/TextureParametersBuilder.h \
+    gl/textures/RenderBuffer.h \
+    gl/textures/DepthBuffer.h \
+    gl/shaders/CS123Shader.h \
+    gl/shaders/GBufferShader.h \
+    gl/util/FullScreenQuad.h \
+    lib/CS123XmlSceneParser.h \
+    lib/CS123SceneData.h \
+    lib/CS123ISceneParser.h \
+    lib/ResourceLoader.h \
+    scenegraph/Scene.h \
+    scenegraph/OpenGLScene.h \
+    scenegraph/SceneviewScene.h \
     ui/view.h \
-    ui/viewformat.h
-
-FORMS += ui/mainwindow.ui
-INCLUDEPATH += glm ui glew-1.10.0/include
-DEPENDPATH += glm ui glew-1.10.0/include
+    ui/viewformat.h \
+    ui/mainwindow.h \
+    glew-1.10.0/include/GL/glew.h \
+    camera/QuaternionCamera.h
 
 DEFINES += _USE_MATH_DEFINES
 DEFINES += TIXML_USE_STL
 DEFINES += GLM_SWIZZLE GLM_FORCE_RADIANS
-OTHER_FILES += shaders/shader.frag \
-    shaders/shader.vert
+OTHER_FILES += \
+    images/* \
+    shaders/*
 
-# Don't add the -pg flag unless you know what you are doing. It makes QThreadPool freeze on Mac OS X
-QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_CXXFLAGS_RELEASE += -O3
-QMAKE_CXXFLAGS_WARN_ON -= -Wall
-QMAKE_CXXFLAGS_WARN_ON += -Waddress -Warray-bounds -Wc++0x-compat -Wchar-subscripts -Wformat\
-                          -Wmain -Wmissing-braces -Wparentheses -Wreorder -Wreturn-type \
-                          -Wsequence-point -Wsign-compare -Wstrict-overflow=1 -Wswitch \
-                          -Wtrigraphs -Wuninitialized -Wunused-label -Wunused-variable \
-                          -Wvolatile-register-var -Wno-extra
+FORMS += ui/mainwindow.ui
+INCLUDEPATH += glm lib libraries libraries/openvr/headers shapes ui glew-1.10.0/include
+DEPENDPATH += glm lib libraries libraries/openvr/headers shapes ui glew-1.10.0/include
 
-QMAKE_CXXFLAGS += -g
-
-# QMAKE_CXX_FLAGS_WARN_ON += -Wunknown-pragmas -Wunused-function -Wmain
-
-macx {
-    QMAKE_CXXFLAGS_WARN_ON -= -Warray-bounds -Wc++0x-compat
-}
+DEFINES += _USE_MATH_DEFINES
+DEFINES += TIXML_USE_STL
+DEFINES += GLM_SWIZZLE GLM_FORCE_RADIANS
+OTHER_FILES += \
+    shaders/*
 
 RESOURCES += \
     resources.qrc
 
-DISTFILES += \
-    shaders/normals/normals.vert \
-    shaders/normals/normals.frag \
-    shaders/normals/normals.gsh \
-    shaders/normals/normalsArrow.gsh \
-    shaders/normals/normalsArrow.frag \
-    shaders/normals/normalsArrow.vert
+defineTest(copyToDestdir) {
+    files = $$1
+    for(FILE, files) {
+        CONFIG(debug, debug|release) {
+            DDIR = $${OUT_PWD}/debug
+        } else {
+            DDIR = $${OUT_PWD}/release
+        }
+
+        # Replace slashes in paths with backslashes for Windows
+        win32:FILE ~= s,/,\\,g
+        win32:DDIR ~= s,/,\\,g
+        QMAKE_POST_LINK += $$QMAKE_COPY $$quote($$FILE) $$quote($$DDIR) $$escape_expand(\\n\\t)
+    }
+    export(QMAKE_POST_LINK)
+}
+
+win32 {
+    contains(QT_ARCH, i386) {
+        message("32 bit build")
+            LIBS += -L$$PWD/libraries/openvr/lib/win32/ -lopenvr_api
+            copyToDestdir($$PWD/libraries/openvr/bin/win32/openvr_api.dll)
+    } else {
+        message("64 bit build")
+            LIBS += -L$$PWD/libraries/openvr/lib/win64/ -lopenvr_api
+            copyToDestdir($$PWD/libraries/openvr/bin/win64/openvr_api.dll)
+    }
+}
+
+macx {
+    LIBS += -L$$PWD/libraries/openvr/bin/osx32 -lopenvr_api
+}
+
+linux {
+
+    LIBS += -L$$PWD/libraries/steam-runtime/amd64/lib/x86_64-linux-gnu
+    LIBS += -L$$PWD/libraries/steam-runtime/amd64/lib
+    LIBS += -L$$PWD/libraries/steam-runtime/amd64/usr/lib/x86_64-linux-gnu
+    LIBS += -L$$PWD/libraries/steam-runtime/amd64/usr/lib
+    LIBS += -L$$PWD/libraries/steam-runtime/i386/lib/i386-linux-gnu
+    LIBS += -L$$PWD/libraries/steam-runtime/i386/lib
+    LIBS += -L$$PWD/libraries/steam-runtime/i386/usr/lib/i386-linux-gnu
+    LIBS += -L$$PWD/libraries/steam-runtime/i386/usr/lib
+    LIBS += -L$$PWD/libraries/openvr/bin/linux64 -lopenvr_api
+}
