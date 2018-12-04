@@ -29,7 +29,6 @@ public:
     const RenderBuffer& getDepthStencilAttachment() const;
 
     size_t getNumColorAttachments() const;
-    unsigned int getId();
 
 private:
     void generateColorAttachments(int count, TextureParameters::WRAP_METHOD wrapMethod,

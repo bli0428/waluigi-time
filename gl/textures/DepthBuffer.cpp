@@ -11,4 +11,8 @@ DepthBuffer::DepthBuffer(int width, int height) :
     // TODO [Task 8] bind() the render buffer and call glRenderbufferStorageEXT
 
     // TODO Don't forget to unbind()!
+
+    bind();
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+    unbind();
 }

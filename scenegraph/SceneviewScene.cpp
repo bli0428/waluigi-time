@@ -80,7 +80,6 @@ void SceneviewScene::renderGeometry() {
         }
 
         // for each node, we set its model uniform and apply its material, and then draw the appropriate shape
-        std::cout << m_primitives.size() << std::endl;
         for (PrimitiveNode node : m_primitives) {
             m_phongShader->setUniform("m", node.matrix);
 
