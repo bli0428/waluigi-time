@@ -49,6 +49,9 @@ public:
     // pointer.  This will be used during the "modeler" lab, so don't worry about it for now.
     void setSelection(int x, int y);
 
+    void setLeftHand(glm::mat4x4 transform);
+    void setRightHand(glm::mat4x4 transform);
+
 private:
 
 
@@ -58,12 +61,18 @@ private:
     void setSceneUniforms(glm::mat4x4 &projectionMatrix, glm::mat4x4 &viewMatrix);
     void setLights();
     void renderGeometry();
+    void updateControllerMaterial(PrimitiveNode hand);
 
     std::unique_ptr<CS123::GL::CS123Shader> m_phongShader;
     std::unique_ptr<Cube> m_cube;
     std::unique_ptr<Sphere> m_sphere;
     std::unique_ptr<Cylinder> m_cylinder;
     std::unique_ptr<Cone> m_cone;
+
+    PrimitiveNode m_leftHand;
+    PrimitiveNode m_rightHand;
+    CS123SceneMaterial m_material;
+    bool didSetMaterial = false;
 
 };
 

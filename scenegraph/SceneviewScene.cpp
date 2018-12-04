@@ -87,6 +87,15 @@ void SceneviewScene::renderGeometry() {
             node.material.cDiffuse *= m_global.kd;
             node.material.cAmbient *= m_global.ka;
 
+            //Ideally, if we put more work into the hands (create textures/colors, etc), we can delete the if statement
+            //for now, I'm just stealing the color of the first node m_primitives so that you can actually see the hands
+            if (!didSetMaterial) {
+                m_material = node.material;
+                didSetMaterial = true;
+                updateControllerMaterial(m_leftHand);
+                updateControllerMaterial(m_rightHand);
+            };
+
             m_phongShader->applyMaterial(node.material);
 
             switch (node.type) {
@@ -107,6 +116,38 @@ void SceneviewScene::renderGeometry() {
                 break;
             }
         }
+
+        //now handle the controller stuff-I'll might move this into primitives later,
+        //but the hand position needs to be updated every frame, so it might be tough
+
+        //normal sized shapes are too big, so I made them a little smaller
+        glm::mat4x4 shrink = {0.2f, 0, 0, 0,
+                              0, 0.2f, 0, 0,
+                              0, 0, 0.2f, 0,
+                              0, 0, 0, 1};
+        m_phongShader->setUniform("m", shrink * m_leftHand.matrix);
+        m_phongShader->applyMaterial(m_material);
+        m_cube->draw();
+        m_phongShader->setUniform("m", shrink * m_rightHand.matrix);
+        m_phongShader->applyMaterial(m_material);
+        m_cube->draw();
+}
+
+void SceneviewScene::updateControllerMaterial(PrimitiveNode hand) {
+
+    if (!didSetMaterial) {
+        hand.material = m_material;
+    }
+    hand.type = PrimitiveType::PRIMITIVE_SPHERE;
+}
+
+//These will be used in view.cpp to update the hand positions every frame
+void SceneviewScene::setLeftHand(glm::mat4x4 transform) {
+    m_leftHand.matrix = transform;
+}
+
+void SceneviewScene::setRightHand(glm::mat4x4 transform) {
+    m_rightHand.matrix = transform;
 }
 
 void SceneviewScene::settingsChanged() {
