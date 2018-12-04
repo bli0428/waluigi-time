@@ -77,6 +77,8 @@ void SceneviewScene::renderGeometry() {
             m_sphere = std::make_unique<Sphere>(4, 4, 4);
             m_cylinder = std::make_unique<Cylinder>(4, 4, 4);
             m_rerender = false;
+
+            m_handShape = std::make_unique<Sphere>(4, 4, 4, 0.1f);
         }
 
         // for each node, we set its model uniform and apply its material, and then draw the appropriate shape
@@ -120,17 +122,14 @@ void SceneviewScene::renderGeometry() {
         //now handle the controller stuff-I'll might move this into primitives later,
         //but the hand position needs to be updated every frame, so it might be tough
 
-        //normal sized shapes are too big, so I made them a little smaller
-        glm::mat4x4 shrink = {0.2f, 0, 0, 0,
-                              0, 0.2f, 0, 0,
-                              0, 0, 0.2f, 0,
-                              0, 0, 0, 1};
-        m_phongShader->setUniform("m", shrink * m_leftHand.matrix);
-        m_phongShader->applyMaterial(m_material);
-        m_cube->draw();
-        m_phongShader->setUniform("m", shrink * m_rightHand.matrix);
-        m_phongShader->applyMaterial(m_material);
-        m_cube->draw();
+        drawHand(m_leftHand);
+        drawHand(m_rightHand);
+}
+
+void SceneviewScene::drawHand(PrimitiveNode hand) {
+    m_phongShader->setUniform("m", hand.matrix);
+    m_phongShader->applyMaterial(m_material);
+    m_handShape->draw();
 }
 
 void SceneviewScene::updateControllerMaterial(PrimitiveNode hand) {

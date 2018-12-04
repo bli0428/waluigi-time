@@ -259,33 +259,12 @@ void View::obtainControllerPositions() {
         const glm::mat4 &mat = m_mat4DevicePose[trackedDeviceIndex];
 
 
-        //I think I figured out the issue- my brain is absolutely fried right now and I don't think I can be of much help for a while,
-        //but basically the rotation works, but the position stuff doesn't, and after a while of agonizing over code and a LOT of trial and
-        //error, I realized that world space for the device, which is represented by vrMatrixToGlm(m_trackedDevicePose[trackedDeviceIndex].mDeviceToAbsoluteTracking),
-        //is not the same as world space for sceneview. So when I load in matrix in the phong shader, the hand-squares barely change position (They still do, just only a little)
-        //
-        //TL,DR:
-        //We need to come up with a transformation matrix to convert from vive controller world space to sceneview phong shader world space.
         if (m_scene) {
             switch (m_hmd->GetControllerRoleForTrackedDeviceIndex(trackedDeviceIndex)) {
                 case vr::TrackedControllerRole_Invalid:
                 break;
             case vr::TrackedControllerRole_LeftHand:
-                //m_scene->setLeftHand(mat);
                 m_scene->setLeftHand(vrMatrixToGlm(m_trackedDevicePose[trackedDeviceIndex].mDeviceToAbsoluteTracking));
-//                for(int x=0;x<4;x++)  // loop 3 times for three lines
-//                    {
-//                        for(int y=0;y<4;y++)  // loop for the three elements on the line
-//                        {
-//                            std::cout<<vrMatrixToGlm(m_trackedDevicePose[trackedDeviceIndex].mDeviceToAbsoluteTracking)[x][y];  // display the current element out of the array
-//                        }
-//                    std::cout<<std::endl;  // when the inner loop is done, go to a new line
-//                    }
-
-//                std::cout<<m_trackedDevicePose[trackedDeviceIndex].mDeviceToAbsoluteTracking.m[0][3]<<std::endl;
-//                std::cout<<m_trackedDevicePose[trackedDeviceIndex].mDeviceToAbsoluteTracking.m[1][3]<<std::endl;
-//                std::cout<<m_trackedDevicePose[trackedDeviceIndex].mDeviceToAbsoluteTracking.m[2][3]<<std::endl;
-//                std::cout<<"--------"<<std::endl;
                 break;
             case vr::TrackedControllerRole_RightHand:
                 m_scene->setRightHand(vrMatrixToGlm(m_trackedDevicePose[trackedDeviceIndex].mDeviceToAbsoluteTracking));

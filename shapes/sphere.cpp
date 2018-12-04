@@ -3,10 +3,20 @@
 
 Sphere::Sphere(int p1, int p2, int p3) :
     OpenGLShape(p1 < 2 ? 2 : p1, p2 < 3 ? 3 : p2, p3, 2),
-    m_ringDrawer(SquareRingDrawer())
+    m_ringDrawer(SquareRingDrawer()),
+    m_radius(0.5f)
 {
     this->initialize();
 }
+
+Sphere::Sphere(int p1, int p2, int p3, float radius) :
+    OpenGLShape(p1 < 2 ? 2 : p1, p2 < 3 ? 3 : p2, p3, 2),
+    m_ringDrawer(SquareRingDrawer()),
+    m_radius(radius)
+{
+    this->initialize();
+}
+
 
 void Sphere::initialize() {
     this->generateVertices();
@@ -36,10 +46,10 @@ void Sphere::generateVertices() {
  */
 void Sphere::generateStrip(float phiStart, float phiEnd) {
     // calculates the relevant radiuses and y-positions
-    float lowerRadius = glm::cos(phiStart) * 0.5;
-    float upperRadius = glm::cos(phiEnd) * 0.5;
-    float lowerY = glm::sin(phiStart) * 0.5;
-    float upperY = glm::sin(phiEnd) * 0.5;
+    float lowerRadius = glm::cos(phiStart) * m_radius;
+    float upperRadius = glm::cos(phiEnd) * m_radius;
+    float lowerY = glm::sin(phiStart) * m_radius;
+    float upperY = glm::sin(phiEnd) * m_radius;
 
     // gets coordinates from the helper m_ringDrawer
     std::vector<glm::vec3> coords = m_ringDrawer.draw(upperRadius, lowerRadius, upperY, lowerY, m_p2);
@@ -50,3 +60,4 @@ void Sphere::generateStrip(float phiStart, float phiEnd) {
         OpenGLShape::pushCoord(coord * 2.f);
     }
 }
+

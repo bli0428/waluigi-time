@@ -21,7 +21,7 @@ using namespace CS123::GL;
 class OpenGLShape {
 public:
     OpenGLShape(int p1, int p2, int p3, int shapeType);
-    ~OpenGLShape();
+    virtual ~OpenGLShape();
 
     /** Draw the initialized geometry. */
     void draw();

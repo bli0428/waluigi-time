@@ -62,6 +62,7 @@ private:
     void setLights();
     void renderGeometry();
     void updateControllerMaterial(PrimitiveNode hand);
+    void drawHand(PrimitiveNode hand);
 
     std::unique_ptr<CS123::GL::CS123Shader> m_phongShader;
     std::unique_ptr<Cube> m_cube;
@@ -69,6 +70,7 @@ private:
     std::unique_ptr<Cylinder> m_cylinder;
     std::unique_ptr<Cone> m_cone;
 
+    std::unique_ptr<Sphere> m_handShape;
     PrimitiveNode m_leftHand;
     PrimitiveNode m_rightHand;
     CS123SceneMaterial m_material;
