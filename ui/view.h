@@ -100,6 +100,10 @@ private:
         );
     }
 
+    glm::vec3 vrVectorToGlm(const vr::HmdVector3_t &vec) {
+        return glm::vec3(vec.v[0], vec.v[1], vec.v[2]);
+    }
+
 public slots:
     void fileOpen();
 

@@ -19,6 +19,8 @@
 #include <iostream>
 #include "scenegraph/SceneviewScene.h"
 
+using namespace vr;
+
 View::View(QWidget *parent)
     : QGLWidget(ViewFormat(), parent),
     m_time(),
@@ -265,9 +267,11 @@ void View::obtainControllerPositions() {
                 break;
             case vr::TrackedControllerRole_LeftHand:
                 m_scene->setLeftHand(vrMatrixToGlm(m_trackedDevicePose[trackedDeviceIndex].mDeviceToAbsoluteTracking));
+                m_scene->setLeftHandVelocity(vrVectorToGlm(m_trackedDevicePose[trackedDeviceIndex].vVelocity));
                 break;
             case vr::TrackedControllerRole_RightHand:
                 m_scene->setRightHand(vrMatrixToGlm(m_trackedDevicePose[trackedDeviceIndex].mDeviceToAbsoluteTracking));
+                m_scene->setRightHandVelocity(vrVectorToGlm(m_trackedDevicePose[trackedDeviceIndex].vVelocity));
                 break;
             }
         }
@@ -352,8 +356,12 @@ void View::updateInputs() {
         if(m_hmd->GetControllerState(deviceIndex, &state, sizeof(state))) {
             m_activeTrackedDevice[deviceIndex] = (state.ulButtonPressed == 0);
 
+            if(vr::ButtonMaskFromId(vr::EVRButtonId::k_EButton_SteamVR_Trigger) == state.ulButtonPressed) {
+                //std::cout<<vr::ButtonMaskFromId(vr::EVRButtonId::k_EButton_SteamVR_Trigger)<<std::endl;
+            }
+
             if (state.ulButtonPressed) {
-                /* controller button is presses */
+
             }
 
             if (state.ulButtonTouched) {
@@ -382,6 +390,43 @@ void View::tick() {
     updateInputs();
 
     // TODO: do any other updating here
+    VREvent_t event;
+    if(m_hmd->PollNextEvent(&event, sizeof(event))) {
+        switch(event.data.controller.button) {
+            case k_EButton_SteamVR_Trigger:
+                switch(event.eventType) {
+                    case VREvent_ButtonPress:
+                        switch(m_hmd->GetControllerRoleForTrackedDeviceIndex(event.trackedDeviceIndex)) {
+                            case TrackedControllerRole_LeftHand:
+                                std::cout<<"left press"<<std::endl;
+                                break;
+                            case TrackedControllerRole_RightHand:
+                                std::cout<<"right press"<<std::endl;
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case VREvent_ButtonUnpress:
+                        switch(m_hmd->GetControllerRoleForTrackedDeviceIndex(event.trackedDeviceIndex)) {
+                            case TrackedControllerRole_LeftHand:
+                                std::cout<<"left unpress"<<std::endl;
+                                break;
+                            case TrackedControllerRole_RightHand:
+                                std::cout<<"right unpress"<<std::endl;
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
 
     /* Flag this view for repainting (Qt will call paintGL() soon after) */
     update();
