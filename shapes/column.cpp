@@ -3,6 +3,11 @@
 #include "stdlib.h"
 #include <iostream>
 
+/**
+ * @brief Column::Column
+ * @param p1 - number of floors
+ * @param p2 - number of wedges
+ */
 Column::Column(int p1, int p2) :
     OpenGLShape(p1, p2 < 3 ? 3 : p2, 1, 3),
     m_stripDrawer(TriangleStripDrawer()),
@@ -21,12 +26,14 @@ void Column::generateOffsets() {
     m_offsets.reserve(m_p2 * m_p1);
     for (int i = 0; i < m_p1 * m_p2; i++) {
         float randX = static_cast<float>(rand()) / RAND_MAX;
-        std::cout << randX << std::endl;
+        float randY = static_cast<float>(rand()) / RAND_MAX;
+        float randZ = static_cast<float>(rand()) / RAND_MAX;
+        m_offsets.push_back(glm::vec3(randX, randY, randZ));
     }
 }
 
 /**
- * @brief Column::generateVertices Generates all the vertices for the cylinder.
+ * @brief Column::generateVertices Generates all the vertices for the column.
  */
 void Column::generateVertices() {
     m_coordinates.reserve(2*(2 * m_p1 + 1) * m_p2 * 6 + m_p1 * 2 * (m_p2 + 1) * 6);

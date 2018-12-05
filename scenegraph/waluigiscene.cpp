@@ -1,7 +1,13 @@
 #include "waluigiscene.h"
 #include "iostream"
 #include "gl/shaders/CS123Shader.h"
+#include "column.h"
 
+/**
+ * @brief WaluigiScene::WaluigiScene
+ * This scene INHERITS from SceneView, so all the VR hand-stuff and the camera/lights/etc initialization is already there. This just overrides how
+ * the geometry/lights are done.
+ */
 WaluigiScene::WaluigiScene() : SceneviewScene()
 {
 }
@@ -11,15 +17,15 @@ WaluigiScene::~WaluigiScene() {
 }
 
 void WaluigiScene::renderGeometry() {
-    m_cube = std::make_unique<Cube>(4, 4, 4);
+    std::unique_ptr<Column> column = std::make_unique<Column>(8, 8);
     m_phongShader->setUniform("m", glm::mat4x4());
 
     CS123SceneMaterial material = CS123SceneMaterial();
-    material.cDiffuse = glm::vec4(1.f, 0.f, 0.f, 0.f);
+    material.cDiffuse = glm::vec4(0.5f, 0.2f, 0.2f, 0.f);
     material.cAmbient = glm::vec4(0.3f, 0.f, 0.f, 0.f);
 
     m_phongShader->applyMaterial(material);
-    m_cube->draw();
+    column->draw();
 }
 
 void WaluigiScene::setLights() {
@@ -31,9 +37,12 @@ void WaluigiScene::setLights() {
     m_phongShader->setLight(light);
 }
 
+/**
+ * @brief WaluigiScene::drawHands Moved all Waluigi-specific hand drawing stuff here, which just makes red hands for now.
+ * A similar method is still in Sceneview; I didn't really completely refactor this, but this is the method to change for our
+ * Waluigi-specific things.
+ */
 void WaluigiScene::drawHands() {
-    //Ideally, if we put more work into the hands (create textures/colors, etc), we can delete the if statement
-    //for now, I'm just stealing the color of the first node m_primitives so that you can actually see the hands
     if (!didSetMaterial) {
         m_handShape = std::make_unique<Sphere>(4, 4, 4, 0.1f);
 
