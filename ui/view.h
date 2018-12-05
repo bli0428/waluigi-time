@@ -12,6 +12,7 @@
 #include "gl/datatype/FBO.h"
 #include "camera/QuaternionCamera.h"
 #include "scenegraph/OpenGLScene.h"
+#include "scenegraph/waluigiscene.h"
 
 class SceneviewScene;
 
@@ -28,7 +29,7 @@ private:
     bool m_captureMouse;
     bool m_keys[68836];
 
-    std::unique_ptr<SceneviewScene> m_scene;
+    std::unique_ptr<WaluigiScene> m_scene;
     QuaternionCamera m_camera;
 
     float m_near, m_far;
@@ -74,6 +75,9 @@ private:
     // updates current controller inputs
     void updateInputs();
 
+    // handler for button pressed events
+    void checkPress();
+
     // mouse and keyboard events
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -99,6 +103,10 @@ private:
             mat.m[0][2], mat.m[1][2], mat.m[2][2], mat.m[3][2],
             mat.m[0][3], mat.m[1][3], mat.m[2][3], mat.m[3][3]
         );
+    }
+
+    glm::vec3 vrVectorToGlm(const vr::HmdVector3_t &vec) {
+        return glm::vec3(vec.v[0], vec.v[1], vec.v[2]);
     }
 
 public slots:

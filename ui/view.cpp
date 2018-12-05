@@ -20,6 +20,8 @@
 #include "scenegraph/SceneviewScene.h"
 #include "scenegraph/waluigiscene.h"
 
+using namespace vr;
+
 View::View(QWidget *parent)
     : QGLWidget(ViewFormat(), parent),
     m_time(),
@@ -42,6 +44,7 @@ View::View(QWidget *parent)
 
     /* The update loop is implemented using a timer */
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(tick()));
+
 }
 
 View::~View()
@@ -175,6 +178,9 @@ void View::initVR() {
                                                  CS123::GL::TextureParameters::WRAP_METHOD::CLAMP_TO_EDGE,
                                                  CS123::GL::TextureParameters::FILTER_METHOD::LINEAR,
                                                  GL_UNSIGNED_BYTE);
+
+        // no file has been loaded yet, so make a WaluigiScene by default
+        m_scene = std::make_unique<WaluigiScene>();
 }
 
 void View::resizeGL(int w, int h) {
@@ -216,7 +222,6 @@ void View::paintGL() {
        if(m_scene != nullptr) {
            m_scene->render(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
        } else {
-           // no file has been loaded yet, so make a WaluigiScene by default
            m_scene = std::make_unique<WaluigiScene>();
            m_camera.orientLook(glm::vec4(4, 4, 4, 0), glm::vec4(-1, -1, -1, 0), glm::vec4(0, 1, 0, 0));
        }
@@ -270,9 +275,11 @@ void View::obtainControllerPositions() {
                 break;
             case vr::TrackedControllerRole_LeftHand:
                 m_scene->setLeftHand(vrMatrixToGlm(m_trackedDevicePose[trackedDeviceIndex].mDeviceToAbsoluteTracking));
+                m_scene->setLeftHandVelocity(vrVectorToGlm(m_trackedDevicePose[trackedDeviceIndex].vVelocity));
                 break;
             case vr::TrackedControllerRole_RightHand:
                 m_scene->setRightHand(vrMatrixToGlm(m_trackedDevicePose[trackedDeviceIndex].mDeviceToAbsoluteTracking));
+                m_scene->setRightHandVelocity(vrVectorToGlm(m_trackedDevicePose[trackedDeviceIndex].vVelocity));
                 break;
             }
         }
@@ -357,8 +364,12 @@ void View::updateInputs() {
         if(m_hmd->GetControllerState(deviceIndex, &state, sizeof(state))) {
             m_activeTrackedDevice[deviceIndex] = (state.ulButtonPressed == 0);
 
+            if(vr::ButtonMaskFromId(vr::EVRButtonId::k_EButton_SteamVR_Trigger) == state.ulButtonPressed) {
+                //std::cout<<vr::ButtonMaskFromId(vr::EVRButtonId::k_EButton_SteamVR_Trigger)<<std::endl;
+            }
+
             if (state.ulButtonPressed) {
-                /* controller button is presses */
+
             }
 
             if (state.ulButtonTouched) {
@@ -385,11 +396,54 @@ void View::tick() {
     /* VR updates */
     updatePoses();
     updateInputs();
-
-    // TODO: do any other updating here
+    checkPress();
 
     /* Flag this view for repainting (Qt will call paintGL() soon after) */
     update();
+}
+
+void View::checkPress() {
+    // TODO: do any other updating here
+    if (m_hmd) {
+        VREvent_t event;
+        if(m_hmd->PollNextEvent(&event, sizeof(event))) {
+            switch(event.data.controller.button) {
+                case k_EButton_SteamVR_Trigger:
+                    switch(event.eventType) {
+                        case VREvent_ButtonPress:
+                            switch(m_hmd->GetControllerRoleForTrackedDeviceIndex(event.trackedDeviceIndex)) {
+                                case TrackedControllerRole_LeftHand:
+                                    std::cout<<"left press"<<std::endl;
+                                    break;
+                                case TrackedControllerRole_RightHand:
+                                    std::cout<<"right press"<<std::endl;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        case VREvent_ButtonUnpress:
+                            switch(m_hmd->GetControllerRoleForTrackedDeviceIndex(event.trackedDeviceIndex)) {
+                                case TrackedControllerRole_LeftHand:
+                                    std::cout<<"left unpress"<<std::endl;
+                                    break;
+                                case TrackedControllerRole_RightHand:
+                                    std::cout<<"right unpress"<<std::endl;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
 }
 
 /* Keyboard events */
@@ -441,8 +495,9 @@ void View::fileOpen() {
     if (!file.isNull() && file.endsWith(".xml")) {
         CS123XmlSceneParser parser(file.toLatin1().data());
         if (parser.parse()) {
-            m_scene = std::make_unique<SceneviewScene>();
-            Scene::parse(m_scene.get(), &parser);
+            //We don't need the file dialogue
+           // m_scene = std::make_unique<SceneviewScene>();
+            //Scene::parse(m_scene.get(), &parser);
         } else {
             QMessageBox::critical(this, "Error", "Could not load scene \"" + file + "\"");
         }

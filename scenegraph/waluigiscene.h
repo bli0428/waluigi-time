@@ -8,12 +8,35 @@ class WaluigiScene : public SceneviewScene
 {
 public:
     WaluigiScene();
-    ~WaluigiScene();
+    virtual ~WaluigiScene();
+    void setLeftHand(glm::mat4x4 transform);
+    void setRightHand(glm::mat4x4 transform);
+    void setLeftHandVelocity(glm::vec3 velocity);
+    void setRightHandVelocity(glm::vec3 velocity);
 
 protected:
     virtual void setLights() override;
     virtual void renderGeometry() override;
-    virtual void drawHands() override;
+
+
+private:
+    void drawHands();
+    void updateControllerMaterial(PrimitiveNode hand);
+    void drawHand(PrimitiveNode hand);
+
+    void drawTestSphere(int x);
+    std::unique_ptr<Sphere> m_handShape;
+    PrimitiveNode m_leftHand;
+    PrimitiveNode m_rightHand;
+    CS123SceneMaterial m_material;
+    bool didSetMaterial = false;
+
+    std::unique_ptr<Sphere> m_testSphere;
+    int m_testNum;
+
+    float m_time;
+    glm::vec3 m_leftVel;
+    glm::vec3 m_rightVel;
 
 private:
     std::unique_ptr<Column> m_column;

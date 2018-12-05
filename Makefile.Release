@@ -77,7 +77,9 @@ SOURCES       = gl\shaders\Shader.cpp \
 		shapes\shapeutil.cpp \
 		shapes\sphere.cpp \
 		shapes\squareringdrawer.cpp \
-		shapes\trianglestripdrawer.cpp release\qrc_resources.cpp \
+		shapes\trianglestripdrawer.cpp \
+		shapes\column.cpp \
+		scenegraph\waluigiscene.cpp release\qrc_resources.cpp \
 		release\moc_view.cpp \
 		release\moc_mainwindow.cpp
 OBJECTS       = release/Shader.o \
@@ -115,6 +117,8 @@ OBJECTS       = release/Shader.o \
 		release/sphere.o \
 		release/squareringdrawer.o \
 		release/trianglestripdrawer.o \
+		release/column.o \
+		release/waluigiscene.o \
 		release/qrc_resources.o \
 		release/moc_view.o \
 		release/moc_mainwindow.o
@@ -155,7 +159,9 @@ DIST          =  gl\shaders\Shader.h \
 		shapes\shapeutil.h \
 		shapes\sphere.h \
 		shapes\squareringdrawer.h \
-		shapes\trianglestripdrawer.h gl\shaders\Shader.cpp \
+		shapes\trianglestripdrawer.h \
+		shapes\column.h \
+		scenegraph\waluigiscene.h gl\shaders\Shader.cpp \
 		gl\GLDebug.cpp \
 		gl\datatype\VBOAttribMarker.cpp \
 		gl\datatype\VBO.cpp \
@@ -189,7 +195,9 @@ DIST          =  gl\shaders\Shader.h \
 		shapes\shapeutil.cpp \
 		shapes\sphere.cpp \
 		shapes\squareringdrawer.cpp \
-		shapes\trianglestripdrawer.cpp
+		shapes\trianglestripdrawer.cpp \
+		shapes\column.cpp \
+		scenegraph\waluigiscene.cpp
 QMAKE_TARGET  = final
 DESTDIR        = release\ #avoid trailing-slash linebreak
 TARGET         = final.exe
@@ -214,7 +222,7 @@ dist:
 	$(ZIP) final.zip $(SOURCES) $(DIST) final.pro C:\Qt\5.7\mingw53_32\mkspecs\features\spec_pre.prf C:\Qt\5.7\mingw53_32\mkspecs\qdevice.pri C:\Qt\5.7\mingw53_32\mkspecs\features\device_config.prf C:\Qt\5.7\mingw53_32\mkspecs\common\angle.conf C:\Qt\5.7\mingw53_32\mkspecs\qconfig.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3dcore.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3dcore_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3dextras.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3dextras_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3dinput.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3dinput_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3dlogic.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3dlogic_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3dquick.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3dquick_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3dquickextras.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3dquickextras_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3dquickinput.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3dquickinput_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3dquickrender.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3dquickrender_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3drender.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_3drender_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_axbase.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_axbase_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_axcontainer.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_axcontainer_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_axserver.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_axserver_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_bluetooth.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_bluetooth_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_bootstrap_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_clucene_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_concurrent.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_concurrent_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_core.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_core_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_dbus.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_dbus_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_designer.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_designer_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_designercomponents_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_gui.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_gui_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_help.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_help_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_location.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_location_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_multimedia.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_multimedia_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_multimediawidgets.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_multimediawidgets_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_network.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_network_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_nfc.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_nfc_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_opengl.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_opengl_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_openglextensions.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_openglextensions_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_packetprotocol_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_platformsupport_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_positioning.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_positioning_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_printsupport.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_printsupport_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_qml.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_qml_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_qmldebug_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_qmldevtools_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_qmltest.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_qmltest_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_quick.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_quick_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_quickcontrols2.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_quickcontrols2_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_quickparticles_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_quicktemplates2_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_quickwidgets.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_quickwidgets_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_sensors.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_sensors_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_serialport.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_serialport_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_sql.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_sql_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_svg.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_svg_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_testlib.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_testlib_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_uiplugin.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_uitools.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_uitools_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_webchannel.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_webchannel_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_websockets.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_websockets_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_widgets.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_widgets_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_winextras.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_winextras_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_xml.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_xml_private.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_xmlpatterns.pri C:\Qt\5.7\mingw53_32\mkspecs\modules\qt_lib_xmlpatterns_private.pri C:\Qt\5.7\mingw53_32\mkspecs\features\qt_functions.prf C:\Qt\5.7\mingw53_32\mkspecs\features\qt_config.prf C:\Qt\5.7\mingw53_32\mkspecs\features\win32\qt_config.prf C:\Qt\5.7\mingw53_32\mkspecs\win32-g++\qmake.conf C:\Qt\5.7\mingw53_32\mkspecs\features\spec_post.prf .qmake.stash C:\Qt\5.7\mingw53_32\mkspecs\features\exclusive_builds.prf C:\Qt\5.7\mingw53_32\mkspecs\features\toolchain.prf C:\Qt\5.7\mingw53_32\mkspecs\features\default_pre.prf C:\Qt\5.7\mingw53_32\mkspecs\features\win32\default_pre.prf C:\Qt\5.7\mingw53_32\mkspecs\features\resolve_config.prf C:\Qt\5.7\mingw53_32\mkspecs\features\exclusive_builds_post.prf C:\Qt\5.7\mingw53_32\mkspecs\features\default_post.prf C:\Qt\5.7\mingw53_32\mkspecs\features\build_pass.prf C:\Qt\5.7\mingw53_32\mkspecs\features\qml_debug.prf C:\Qt\5.7\mingw53_32\mkspecs\features\win32\rtti.prf C:\Qt\5.7\mingw53_32\mkspecs\features\precompile_header.prf C:\Qt\5.7\mingw53_32\mkspecs\features\warn_on.prf C:\Qt\5.7\mingw53_32\mkspecs\features\qt.prf C:\Qt\5.7\mingw53_32\mkspecs\features\resources.prf C:\Qt\5.7\mingw53_32\mkspecs\features\moc.prf C:\Qt\5.7\mingw53_32\mkspecs\features\win32\opengl.prf C:\Qt\5.7\mingw53_32\mkspecs\features\uic.prf C:\Qt\5.7\mingw53_32\mkspecs\features\file_copies.prf C:\Qt\5.7\mingw53_32\mkspecs\features\win32\windows.prf C:\Qt\5.7\mingw53_32\mkspecs\features\testcase_targets.prf C:\Qt\5.7\mingw53_32\mkspecs\features\exceptions.prf C:\Qt\5.7\mingw53_32\mkspecs\features\yacc.prf C:\Qt\5.7\mingw53_32\mkspecs\features\lex.prf final.pro resources.qrc C:\Qt\5.7\mingw53_32\lib\qtmain.prl C:\Qt\5.7\mingw53_32\lib\Qt5OpenGL.prl C:\Qt\5.7\mingw53_32\lib\Qt5Widgets.prl C:\Qt\5.7\mingw53_32\lib\Qt5Gui.prl C:\Qt\5.7\mingw53_32\lib\Qt5Xml.prl C:\Qt\5.7\mingw53_32\lib\Qt5Core.prl  NO_PCH_SOURCES RESOURCES HEADERS SOURCES OBJECTIVE_SOURCES FORMS YACCSOURCES YACCSOURCES LEXSOURCES 
 
 clean: compiler_clean 
-	-$(DEL_FILE) release\Shader.o release\GLDebug.o release\VBOAttribMarker.o release\VBO.o release\IBO.o release\VAO.o release\FBO.o release\Texture.o release\Texture2D.o release\TextureParameters.o release\TextureParametersBuilder.o release\RenderBuffer.o release\DepthBuffer.o release\CS123Shader.o release\GBufferShader.o release\FullScreenQuad.o release\CS123XmlSceneParser.o release\ResourceLoader.o release\Scene.o release\OpenGLScene.o release\SceneviewScene.o release\view.o release\viewformat.o release\mainwindow.o release\glew.o release\main.o release\QuaternionCamera.o release\cone.o release\Cube.o release\cylinder.o release\OpenGLShape.o release\shapeutil.o release\sphere.o release\squareringdrawer.o release\trianglestripdrawer.o release\qrc_resources.o release\moc_view.o release\moc_mainwindow.o
+	-$(DEL_FILE) release\Shader.o release\GLDebug.o release\VBOAttribMarker.o release\VBO.o release\IBO.o release\VAO.o release\FBO.o release\Texture.o release\Texture2D.o release\TextureParameters.o release\TextureParametersBuilder.o release\RenderBuffer.o release\DepthBuffer.o release\CS123Shader.o release\GBufferShader.o release\FullScreenQuad.o release\CS123XmlSceneParser.o release\ResourceLoader.o release\Scene.o release\OpenGLScene.o release\SceneviewScene.o release\view.o release\viewformat.o release\mainwindow.o release\glew.o release\main.o release\QuaternionCamera.o release\cone.o release\Cube.o release\cylinder.o release\OpenGLShape.o release\shapeutil.o release\sphere.o release\squareringdrawer.o release\trianglestripdrawer.o release\column.o release\waluigiscene.o release\qrc_resources.o release\moc_view.o release\moc_mainwindow.o
 
 distclean: clean 
 	-$(DEL_FILE) .qmake.stash
@@ -450,6 +458,12 @@ release/moc_view.cpp: glew-1.10.0/include/GL/glew.h \
 		glm/gtx/quaternion.hpp \
 		glm/gtx/norm.hpp \
 		glm/gtx/norm.inl \
+		scenegraph/OpenGLScene.h \
+		scenegraph/Scene.h \
+		lib/CS123SceneData.h \
+		shapes/OpenGLShape.h \
+		gl/datatype/VBO.h \
+		gl/datatype/VBOAttribMarker.h \
 		ui/view.h \
 		C:/Qt/5.7/mingw53_32/bin/moc.exe
 	C:\Qt\5.7\mingw53_32\bin\moc.exe $(DEFINES) -D__GNUC__ -DWIN32 -IC:/Qt/5.7/mingw53_32/mkspecs/win32-g++ -IC:/Users/Kairi/Desktop/CS123Final_bli31-jwang73-dwoods/waluigi-time -IC:/Users/Kairi/Desktop/CS123Final_bli31-jwang73-dwoods/waluigi-time/glm -IC:/Users/Kairi/Desktop/CS123Final_bli31-jwang73-dwoods/waluigi-time/lib -IC:/Users/Kairi/Desktop/CS123Final_bli31-jwang73-dwoods/waluigi-time/libraries -IC:/Users/Kairi/Desktop/CS123Final_bli31-jwang73-dwoods/waluigi-time/libraries/openvr/headers -IC:/Users/Kairi/Desktop/CS123Final_bli31-jwang73-dwoods/waluigi-time/shapes -IC:/Users/Kairi/Desktop/CS123Final_bli31-jwang73-dwoods/waluigi-time/ui -IC:/Users/Kairi/Desktop/CS123Final_bli31-jwang73-dwoods/waluigi-time/glew-1.10.0/include -IC:/Qt/5.7/mingw53_32/include -IC:/Qt/5.7/mingw53_32/include/QtOpenGL -IC:/Qt/5.7/mingw53_32/include/QtWidgets -IC:/Qt/5.7/mingw53_32/include/QtGui -IC:/Qt/5.7/mingw53_32/include/QtANGLE -IC:/Qt/5.7/mingw53_32/include/QtXml -IC:/Qt/5.7/mingw53_32/include/QtCore -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ui\view.h -o release\moc_view.cpp
@@ -772,7 +786,13 @@ ui_mainwindow.h: ui/mainwindow.ui \
 		glm/gtc/quaternion.inl \
 		glm/gtx/quaternion.hpp \
 		glm/gtx/norm.hpp \
-		glm/gtx/norm.inl
+		glm/gtx/norm.inl \
+		scenegraph/OpenGLScene.h \
+		scenegraph/Scene.h \
+		lib/CS123SceneData.h \
+		shapes/OpenGLShape.h \
+		gl/datatype/VBO.h \
+		gl/datatype/VBOAttribMarker.h
 	C:\Qt\5.7\mingw53_32\bin\uic.exe ui\mainwindow.ui -o ui_mainwindow.h
 
 compiler_yacc_decl_make_all:
@@ -1856,9 +1876,8 @@ release/SceneviewScene.o: scenegraph/SceneviewScene.cpp scenegraph/SceneviewScen
 		shapes/squareringdrawer.h \
 		shapes/sphere.h \
 		shapes/cone.h \
-		C:/Qt/5.7/mingw53_32/include/QtOpenGL/QGLWidget \
-		C:/Qt/5.7/mingw53_32/include/QtOpenGL/qgl.h \
-		C:/Qt/5.7/mingw53_32/include/QtGui/qopengl.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/QTimer \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qtimer.h \
 		C:/Qt/5.7/mingw53_32/include/QtCore/qglobal.h \
 		C:/Qt/5.7/mingw53_32/include/QtCore/qconfig.h \
 		C:/Qt/5.7/mingw53_32/include/QtCore/qfeatures.h \
@@ -1881,21 +1900,11 @@ release/SceneviewScene.o: scenegraph/SceneviewScene.cpp scenegraph/SceneviewScen
 		C:/Qt/5.7/mingw53_32/include/QtCore/qmutex.h \
 		C:/Qt/5.7/mingw53_32/include/QtCore/qnumeric.h \
 		C:/Qt/5.7/mingw53_32/include/QtCore/qversiontagging.h \
-		C:/Qt/5.7/mingw53_32/include/QtCore/qt_windows.h \
-		C:/Qt/5.7/mingw53_32/include/QtANGLE/GLES3/gl3.h \
-		C:/Qt/5.7/mingw53_32/include/QtANGLE/GLES3/gl3platform.h \
-		C:/Qt/5.7/mingw53_32/include/QtANGLE/KHR/khrplatform.h \
-		C:/Qt/5.7/mingw53_32/include/QtANGLE/GLES2/gl2.h \
-		C:/Qt/5.7/mingw53_32/include/QtANGLE/GLES2/gl2platform.h \
-		C:/Qt/5.7/mingw53_32/include/QtGui/qopengles2ext.h \
-		C:/Qt/5.7/mingw53_32/include/QtGui/qopenglext.h \
-		C:/Qt/5.7/mingw53_32/include/QtWidgets/qwidget.h \
-		C:/Qt/5.7/mingw53_32/include/QtGui/qwindowdefs.h \
-		C:/Qt/5.7/mingw53_32/include/QtCore/qobjectdefs.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qbasictimer.h \
 		C:/Qt/5.7/mingw53_32/include/QtCore/qnamespace.h \
-		C:/Qt/5.7/mingw53_32/include/QtCore/qobjectdefs_impl.h \
-		C:/Qt/5.7/mingw53_32/include/QtGui/qwindowdefs_win.h \
 		C:/Qt/5.7/mingw53_32/include/QtCore/qobject.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qobjectdefs.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qobjectdefs_impl.h \
 		C:/Qt/5.7/mingw53_32/include/QtCore/qstring.h \
 		C:/Qt/5.7/mingw53_32/include/QtCore/qchar.h \
 		C:/Qt/5.7/mingw53_32/include/QtCore/qbytearray.h \
@@ -1917,6 +1926,20 @@ release/SceneviewScene.o: scenegraph/SceneviewScene.cpp scenegraph/SceneviewScen
 		C:/Qt/5.7/mingw53_32/include/QtCore/qvarlengtharray.h \
 		C:/Qt/5.7/mingw53_32/include/QtCore/qcontainerfwd.h \
 		C:/Qt/5.7/mingw53_32/include/QtCore/qobject_impl.h \
+		C:/Qt/5.7/mingw53_32/include/QtOpenGL/QGLWidget \
+		C:/Qt/5.7/mingw53_32/include/QtOpenGL/qgl.h \
+		C:/Qt/5.7/mingw53_32/include/QtGui/qopengl.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qt_windows.h \
+		C:/Qt/5.7/mingw53_32/include/QtANGLE/GLES3/gl3.h \
+		C:/Qt/5.7/mingw53_32/include/QtANGLE/GLES3/gl3platform.h \
+		C:/Qt/5.7/mingw53_32/include/QtANGLE/KHR/khrplatform.h \
+		C:/Qt/5.7/mingw53_32/include/QtANGLE/GLES2/gl2.h \
+		C:/Qt/5.7/mingw53_32/include/QtANGLE/GLES2/gl2platform.h \
+		C:/Qt/5.7/mingw53_32/include/QtGui/qopengles2ext.h \
+		C:/Qt/5.7/mingw53_32/include/QtGui/qopenglext.h \
+		C:/Qt/5.7/mingw53_32/include/QtWidgets/qwidget.h \
+		C:/Qt/5.7/mingw53_32/include/QtGui/qwindowdefs.h \
+		C:/Qt/5.7/mingw53_32/include/QtGui/qwindowdefs_win.h \
 		C:/Qt/5.7/mingw53_32/include/QtCore/qmargins.h \
 		C:/Qt/5.7/mingw53_32/include/QtGui/qpaintdevice.h \
 		C:/Qt/5.7/mingw53_32/include/QtCore/qrect.h \
@@ -1973,7 +1996,11 @@ release/SceneviewScene.o: scenegraph/SceneviewScene.cpp scenegraph/SceneviewScen
 		C:/Qt/5.7/mingw53_32/include/QtGui/qsurfaceformat.h \
 		lib/ResourceLoader.h \
 		gl/shaders/CS123Shader.h \
-		gl/shaders/Shader.h
+		gl/shaders/Shader.h \
+		glm/gtx/transform.hpp \
+		glm/gtc/matrix_transform.hpp \
+		glm/gtc/matrix_transform.inl \
+		glm/gtx/transform.inl
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\SceneviewScene.o scenegraph\SceneviewScene.cpp
 
 release/view.o: ui/view.cpp ui/view.h \
@@ -2184,12 +2211,17 @@ release/view.o: ui/view.cpp ui/view.h \
 		glm/gtx/quaternion.hpp \
 		glm/gtx/norm.hpp \
 		glm/gtx/norm.inl \
+		scenegraph/OpenGLScene.h \
+		scenegraph/Scene.h \
+		lib/CS123SceneData.h \
+		shapes/OpenGLShape.h \
+		gl/datatype/VBO.h \
+		gl/datatype/VBOAttribMarker.h \
 		ui/viewformat.h \
 		C:/Qt/5.7/mingw53_32/include/QtOpenGL/QGLFormat \
 		lib/ResourceLoader.h \
 		lib/CS123XmlSceneParser.h \
 		lib/CS123ISceneParser.h \
-		lib/CS123SceneData.h \
 		C:/Qt/5.7/mingw53_32/include/QtXml/QtXml \
 		C:/Qt/5.7/mingw53_32/include/QtXml/QtXmlDepends \
 		C:/Qt/5.7/mingw53_32/include/QtCore/QtCore \
@@ -2327,17 +2359,13 @@ release/view.o: ui/view.cpp ui/view.h \
 		C:/Qt/5.7/mingw53_32/include/QtWidgets/qfiledialog.h \
 		C:/Qt/5.7/mingw53_32/include/QtCore/QDebug \
 		scenegraph/SceneviewScene.h \
-		scenegraph/OpenGLScene.h \
-		scenegraph/Scene.h \
-		shapes/OpenGLShape.h \
-		gl/datatype/VBO.h \
-		gl/datatype/VBOAttribMarker.h \
 		shapes/Cube.h \
 		shapes/cylinder.h \
 		shapes/trianglestripdrawer.h \
 		shapes/squareringdrawer.h \
 		shapes/sphere.h \
-		shapes/cone.h
+		shapes/cone.h \
+		scenegraph/waluigiscene.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\view.o ui\view.cpp
 
 release/viewformat.o: ui/viewformat.cpp ui/viewformat.h \
@@ -2712,6 +2740,12 @@ release/mainwindow.o: ui/mainwindow.cpp ui/mainwindow.h \
 		glm/gtx/quaternion.hpp \
 		glm/gtx/norm.hpp \
 		glm/gtx/norm.inl \
+		scenegraph/OpenGLScene.h \
+		scenegraph/Scene.h \
+		lib/CS123SceneData.h \
+		shapes/OpenGLShape.h \
+		gl/datatype/VBO.h \
+		gl/datatype/VBOAttribMarker.h \
 		C:/Qt/5.7/mingw53_32/include/QtOpenGL/QGLFormat
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\mainwindow.o ui\mainwindow.cpp
 
@@ -3180,6 +3214,193 @@ release/trianglestripdrawer.o: shapes/trianglestripdrawer.cpp shapes/trianglestr
 		glm/detail/func_trigonometric.hpp \
 		glm/detail/func_trigonometric.inl
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\trianglestripdrawer.o shapes\trianglestripdrawer.cpp
+
+release/column.o: shapes/column.cpp shapes/column.h \
+		shapes/OpenGLShape.h \
+		glew-1.10.0/include/GL/glew.h \
+		gl/datatype/VBO.h \
+		gl/datatype/VBOAttribMarker.h \
+		glm/geometric.hpp \
+		glm/detail/func_geometric.hpp \
+		glm/detail/type_vec3.hpp \
+		glm/detail/type_vec.hpp \
+		glm/detail/precision.hpp \
+		glm/detail/type_int.hpp \
+		glm/detail/setup.hpp \
+		glm/detail/_swizzle.hpp \
+		glm/detail/_swizzle_func.hpp \
+		glm/detail/type_vec3.inl \
+		glm/detail/func_geometric.inl \
+		glm/detail/func_exponential.hpp \
+		glm/detail/type_vec1.hpp \
+		glm/fwd.hpp \
+		glm/detail/type_float.hpp \
+		glm/detail/type_mat.hpp \
+		glm/detail/type_vec1.inl \
+		glm/detail/type_vec2.hpp \
+		glm/detail/type_vec2.inl \
+		glm/detail/type_vec4.hpp \
+		glm/detail/type_vec4.inl \
+		glm/detail/func_exponential.inl \
+		glm/detail/func_vector_relational.hpp \
+		glm/detail/func_vector_relational.inl \
+		glm/detail/_vectorize.hpp \
+		glm/detail/func_common.hpp \
+		glm/detail/_fixes.hpp \
+		glm/detail/func_common.inl \
+		shapes/trianglestripdrawer.h \
+		shapes/squareringdrawer.h \
+		glm/trigonometric.hpp \
+		glm/detail/func_trigonometric.hpp \
+		glm/detail/func_trigonometric.inl
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\column.o shapes\column.cpp
+
+release/waluigiscene.o: scenegraph/waluigiscene.cpp scenegraph/waluigiscene.h \
+		scenegraph/SceneviewScene.h \
+		scenegraph/OpenGLScene.h \
+		scenegraph/Scene.h \
+		lib/CS123SceneData.h \
+		glm/glm.hpp \
+		glm/detail/_fixes.hpp \
+		glm/fwd.hpp \
+		glm/detail/type_int.hpp \
+		glm/detail/setup.hpp \
+		glm/detail/type_float.hpp \
+		glm/detail/type_vec.hpp \
+		glm/detail/precision.hpp \
+		glm/detail/type_mat.hpp \
+		glm/vec2.hpp \
+		glm/detail/type_vec2.hpp \
+		glm/detail/_swizzle.hpp \
+		glm/detail/_swizzle_func.hpp \
+		glm/detail/type_vec2.inl \
+		glm/vec3.hpp \
+		glm/detail/type_vec3.hpp \
+		glm/detail/type_vec3.inl \
+		glm/vec4.hpp \
+		glm/detail/type_vec4.hpp \
+		glm/detail/type_vec4.inl \
+		glm/mat2x2.hpp \
+		glm/detail/type_mat2x2.hpp \
+		glm/detail/type_mat2x2.inl \
+		glm/mat2x3.hpp \
+		glm/detail/type_mat2x3.hpp \
+		glm/detail/type_mat2x3.inl \
+		glm/mat2x4.hpp \
+		glm/detail/type_mat2x4.hpp \
+		glm/detail/type_mat2x4.inl \
+		glm/mat3x2.hpp \
+		glm/detail/type_mat3x2.hpp \
+		glm/detail/type_mat3x2.inl \
+		glm/mat3x3.hpp \
+		glm/detail/type_mat3x3.hpp \
+		glm/detail/type_mat3x3.inl \
+		glm/mat3x4.hpp \
+		glm/detail/type_mat3x4.hpp \
+		glm/detail/type_mat3x4.inl \
+		glm/mat4x2.hpp \
+		glm/detail/type_mat4x2.hpp \
+		glm/detail/type_mat4x2.inl \
+		glm/mat4x3.hpp \
+		glm/detail/type_mat4x3.hpp \
+		glm/detail/type_mat4x3.inl \
+		glm/mat4x4.hpp \
+		glm/detail/type_mat4x4.hpp \
+		glm/detail/type_mat4x4.inl \
+		glm/trigonometric.hpp \
+		glm/detail/func_trigonometric.hpp \
+		glm/detail/func_trigonometric.inl \
+		glm/detail/_vectorize.hpp \
+		glm/detail/type_vec1.hpp \
+		glm/detail/type_vec1.inl \
+		glm/exponential.hpp \
+		glm/detail/func_exponential.hpp \
+		glm/detail/func_exponential.inl \
+		glm/detail/func_vector_relational.hpp \
+		glm/detail/func_vector_relational.inl \
+		glm/common.hpp \
+		glm/detail/func_common.hpp \
+		glm/detail/func_common.inl \
+		glm/packing.hpp \
+		glm/detail/func_packing.hpp \
+		glm/detail/func_packing.inl \
+		glm/detail/type_half.hpp \
+		glm/detail/type_half.inl \
+		glm/geometric.hpp \
+		glm/detail/func_geometric.hpp \
+		glm/detail/func_geometric.inl \
+		glm/matrix.hpp \
+		glm/detail/func_matrix.hpp \
+		glm/detail/func_matrix.inl \
+		glm/vector_relational.hpp \
+		glm/integer.hpp \
+		glm/detail/func_integer.hpp \
+		glm/detail/func_integer.inl \
+		shapes/OpenGLShape.h \
+		glew-1.10.0/include/GL/glew.h \
+		gl/datatype/VBO.h \
+		gl/datatype/VBOAttribMarker.h \
+		libraries/openvr/headers/openvr.h \
+		shapes/Cube.h \
+		shapes/cylinder.h \
+		shapes/trianglestripdrawer.h \
+		shapes/squareringdrawer.h \
+		shapes/sphere.h \
+		shapes/cone.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/QTimer \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qtimer.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qglobal.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qconfig.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qfeatures.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qsystemdetection.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qprocessordetection.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qcompilerdetection.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qtypeinfo.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qtypetraits.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qisenum.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qsysinfo.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qlogging.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qflags.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qatomic.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qbasicatomic.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qatomic_bootstrap.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qgenericatomic.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qatomic_cxx11.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qatomic_msvc.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qglobalstatic.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qmutex.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qnumeric.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qversiontagging.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qbasictimer.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qnamespace.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qobject.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qobjectdefs.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qobjectdefs_impl.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qstring.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qchar.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qbytearray.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qrefcount.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qarraydata.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qstringbuilder.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qlist.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qalgorithms.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qiterator.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qhashfunctions.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qpair.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qbytearraylist.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qstringlist.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qregexp.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qstringmatcher.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qcoreevent.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qscopedpointer.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qmetatype.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qvarlengtharray.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qcontainerfwd.h \
+		C:/Qt/5.7/mingw53_32/include/QtCore/qobject_impl.h \
+		gl/shaders/CS123Shader.h \
+		gl/shaders/Shader.h \
+		shapes/column.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\waluigiscene.o scenegraph\waluigiscene.cpp
 
 release/qrc_resources.o: release/qrc_resources.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\qrc_resources.o release\qrc_resources.cpp

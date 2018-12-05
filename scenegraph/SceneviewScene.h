@@ -8,6 +8,7 @@
 #include "cone.h"
 #include <memory>
 
+#include <QTimer>
 
 
 namespace CS123 { namespace GL {
@@ -49,8 +50,6 @@ public:
     // pointer.  This will be used during the "modeler" lab, so don't worry about it for now.
     void setSelection(int x, int y);
 
-    void setLeftHand(glm::mat4x4 transform);
-    void setRightHand(glm::mat4x4 transform);
 
 protected:
 
@@ -58,21 +57,12 @@ protected:
     virtual void setSceneUniforms(glm::mat4x4 &projectionMatrix, glm::mat4x4 &viewMatrix);
     virtual void setLights();
     virtual void renderGeometry();
-    virtual void drawHands();
-    void updateControllerMaterial(PrimitiveNode hand);
-    void drawHand(PrimitiveNode hand);
 
     std::unique_ptr<CS123::GL::CS123Shader> m_phongShader;
     std::unique_ptr<Cube> m_cube;
     std::unique_ptr<Sphere> m_sphere;
     std::unique_ptr<Cylinder> m_cylinder;
     std::unique_ptr<Cone> m_cone;
-
-    std::unique_ptr<Sphere> m_handShape;
-    PrimitiveNode m_leftHand;
-    PrimitiveNode m_rightHand;
-    CS123SceneMaterial m_material;
-    bool didSetMaterial = false;
 
 };
 

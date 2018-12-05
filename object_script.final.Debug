@@ -34,6 +34,8 @@ INPUT(
 ./debug\sphere.o
 ./debug\squareringdrawer.o
 ./debug\trianglestripdrawer.o
+./debug\column.o
+./debug\waluigiscene.o
 ./debug\qrc_resources.o
 ./debug\moc_view.o
 ./debug\moc_mainwindow.o
