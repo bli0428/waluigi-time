@@ -18,6 +18,7 @@
 #include <QDebug>
 #include <iostream>
 #include "scenegraph/SceneviewScene.h"
+#include "scenegraph/waluigiscene.h"
 
 View::View(QWidget *parent)
     : QGLWidget(ViewFormat(), parent),
@@ -75,7 +76,7 @@ void View::initializeGL() {
     glClearColor(0.f, 0.f, 0.f, 1.f);
 
     m_near = 0.1f;
-    m_far = 100.0f;
+    m_far = 30.0f;
 
     initVR();
 
@@ -214,6 +215,10 @@ void View::paintGL() {
        /* render the selected scene */
        if(m_scene != nullptr) {
            m_scene->render(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
+       } else {
+           // no file has been loaded yet, so make a WaluigiScene by default
+           m_scene = std::make_unique<WaluigiScene>();
+           m_camera.orientLook(glm::vec4(2, 2, 2, 0), glm::vec4(-1, -1, -1, 0), glm::vec4(0, 1, 0, 0));
        }
    }
 }

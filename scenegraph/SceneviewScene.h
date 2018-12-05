@@ -52,15 +52,13 @@ public:
     void setLeftHand(glm::mat4x4 transform);
     void setRightHand(glm::mat4x4 transform);
 
-private:
-
-
-private:
+protected:
 
     void loadPhongShader();
-    void setSceneUniforms(glm::mat4x4 &projectionMatrix, glm::mat4x4 &viewMatrix);
-    void setLights();
-    void renderGeometry();
+    virtual void setSceneUniforms(glm::mat4x4 &projectionMatrix, glm::mat4x4 &viewMatrix);
+    virtual void setLights();
+    virtual void renderGeometry();
+    virtual void drawHands();
     void updateControllerMaterial(PrimitiveNode hand);
     void drawHand(PrimitiveNode hand);
 

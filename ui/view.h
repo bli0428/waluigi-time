@@ -11,6 +11,7 @@
 
 #include "gl/datatype/FBO.h"
 #include "camera/QuaternionCamera.h"
+#include "scenegraph/OpenGLScene.h"
 
 class SceneviewScene;
 

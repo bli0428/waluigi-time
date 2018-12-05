@@ -45,6 +45,7 @@ void SceneviewScene::render(
     m_phongShader->bind();
     setLights();
     renderGeometry();
+    drawHands();
     glBindTexture(GL_TEXTURE_2D, 0);
     m_phongShader->unbind();
 
@@ -68,68 +69,71 @@ void SceneviewScene::setLights()
 }
 
 void SceneviewScene::renderGeometry() {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        // we use flyweight patterns here, so we only ever save one of each type to draw instead of making one for all of them
-        if (m_rerender) {
-            m_cube = std::make_unique<Cube>(4, 4, 4);
-            m_cone = std::make_unique<Cone>(4, 4, 4);
-            m_sphere = std::make_unique<Sphere>(4, 4, 4);
-            m_cylinder = std::make_unique<Cylinder>(4, 4, 4);
-            m_rerender = false;
+    std::cout << "render geometry!" << std::endl;
 
-            m_handShape = std::make_unique<Sphere>(4, 4, 4, 0.1f);
+    // we use flyweight patterns here, so we only ever save one of each type to draw instead of making one for all of them
+    if (m_rerender) {
+        m_cube = std::make_unique<Cube>(4, 4, 4);
+        m_cone = std::make_unique<Cone>(4, 4, 4);
+        m_sphere = std::make_unique<Sphere>(4, 4, 4);
+        m_cylinder = std::make_unique<Cylinder>(4, 4, 4);
+        m_rerender = false;
+    }
+
+    // for each node, we set its model uniform and apply its material, and then draw the appropriate shape
+    for (PrimitiveNode node : m_primitives) {
+        m_phongShader->setUniform("m", node.matrix);
+
+        // make material lighting adjustments to account for global lighting
+        node.material.cDiffuse *= m_global.kd;
+        node.material.cAmbient *= m_global.ka;
+
+        m_phongShader->applyMaterial(node.material);
+
+        switch (node.type) {
+        case PrimitiveType::PRIMITIVE_CUBE:
+            m_cube->draw();
+            break;
+        case PrimitiveType::PRIMITIVE_CONE:
+            m_cone->draw();
+            break;
+        case PrimitiveType::PRIMITIVE_CYLINDER:
+            m_cylinder->draw();
+            break;
+        case PrimitiveType::PRIMITIVE_SPHERE:
+            m_sphere->draw();
+            break;
+        default:
+            m_cube->draw();
+            break;
         }
-
-        // for each node, we set its model uniform and apply its material, and then draw the appropriate shape
-        for (PrimitiveNode node : m_primitives) {
-            m_phongShader->setUniform("m", node.matrix);
-
-            // make material lighting adjustments to account for global lighting
-            node.material.cDiffuse *= m_global.kd;
-            node.material.cAmbient *= m_global.ka;
-
-            //Ideally, if we put more work into the hands (create textures/colors, etc), we can delete the if statement
-            //for now, I'm just stealing the color of the first node m_primitives so that you can actually see the hands
-            if (!didSetMaterial) {
-                m_material = node.material;
-                didSetMaterial = true;
-                updateControllerMaterial(m_leftHand);
-                updateControllerMaterial(m_rightHand);
-            };
-
-            m_phongShader->applyMaterial(node.material);
-
-            switch (node.type) {
-            case PrimitiveType::PRIMITIVE_CUBE:
-                m_cube->draw();
-                break;
-            case PrimitiveType::PRIMITIVE_CONE:
-                m_cone->draw();
-                break;
-            case PrimitiveType::PRIMITIVE_CYLINDER:
-                m_cylinder->draw();
-                break;
-            case PrimitiveType::PRIMITIVE_SPHERE:
-                m_sphere->draw();
-                break;
-            default:
-                m_cube->draw();
-                break;
-            }
-        }
-
-        //now handle the controller stuff-I'll might move this into primitives later,
-        //but the hand position needs to be updated every frame, so it might be tough
-
-        drawHand(m_leftHand);
-        drawHand(m_rightHand);
+    }
 }
 
 void SceneviewScene::drawHand(PrimitiveNode hand) {
     m_phongShader->setUniform("m", hand.matrix);
     m_phongShader->applyMaterial(m_material);
     m_handShape->draw();
+}
+
+void SceneviewScene::drawHands() {
+    //Ideally, if we put more work into the hands (create textures/colors, etc), we can delete the if statement
+    //for now, I'm just stealing the color of the first node m_primitives so that you can actually see the hands
+    if (!didSetMaterial) {
+        m_handShape = std::make_unique<Sphere>(4, 4, 4, 0.1f);
+        PrimitiveNode node = m_primitives[0];
+        m_material = node.material;
+        didSetMaterial = true;
+        updateControllerMaterial(m_leftHand);
+        updateControllerMaterial(m_rightHand);
+    }
+
+
+    //now handle the controller stuff-I'll might move this into primitives later,
+    //but the hand position needs to be updated every frame, so it might be tough
+    drawHand(m_leftHand);
+    drawHand(m_rightHand);
 }
 
 void SceneviewScene::updateControllerMaterial(PrimitiveNode hand) {
