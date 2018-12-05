@@ -413,10 +413,10 @@ void View::checkPress() {
                         case VREvent_ButtonPress:
                             switch(m_hmd->GetControllerRoleForTrackedDeviceIndex(event.trackedDeviceIndex)) {
                                 case TrackedControllerRole_LeftHand:
-                                    std::cout<<"left press"<<std::endl;
+                                    m_scene->setTrigger(0, true);
                                     break;
                                 case TrackedControllerRole_RightHand:
-                                    std::cout<<"right press"<<std::endl;
+                                    m_scene->setTrigger(1, true);
                                     break;
                                 default:
                                     break;
@@ -425,10 +425,10 @@ void View::checkPress() {
                         case VREvent_ButtonUnpress:
                             switch(m_hmd->GetControllerRoleForTrackedDeviceIndex(event.trackedDeviceIndex)) {
                                 case TrackedControllerRole_LeftHand:
-                                    std::cout<<"left unpress"<<std::endl;
+                                    m_scene->setTrigger(0, false);
                                     break;
                                 case TrackedControllerRole_RightHand:
-                                    std::cout<<"right unpress"<<std::endl;
+                                    m_scene->setTrigger(1, false);
                                     break;
                                 default:
                                     break;

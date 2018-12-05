@@ -13,6 +13,7 @@ public:
     void setRightHand(glm::mat4x4 transform);
     void setLeftHandVelocity(glm::vec3 velocity);
     void setRightHandVelocity(glm::vec3 velocity);
+    void setTrigger(int controllerNum, bool pressed);
 
 protected:
     virtual void setLights() override;
@@ -23,6 +24,8 @@ private:
     void drawHands();
     void updateControllerMaterial(PrimitiveNode hand);
     void drawHand(PrimitiveNode hand);
+    void drawBalls();
+    void drawBall(float time, glm::vec3 vel, glm::mat4x4 pos);
 
     void drawTestSphere(int x);
     std::unique_ptr<Sphere> m_handShape;
@@ -31,12 +34,17 @@ private:
     CS123SceneMaterial m_material;
     bool didSetMaterial = false;
 
-    std::unique_ptr<Sphere> m_testSphere;
+    std::unique_ptr<Sphere> m_ball;
     int m_testNum;
+    QList<float> m_ballTimes;
+    QList<glm::vec3> m_ballVelocities;
+    QList<glm::mat4x4> m_ballPositions;
 
     float m_time;
     glm::vec3 m_leftVel;
     glm::vec3 m_rightVel;
+    bool m_leftPressed;
+    bool m_rightPressed;
 
 private:
     std::unique_ptr<Column> m_column;
