@@ -59,7 +59,9 @@ SOURCES += \
     shapes/shapeutil.cpp \
     shapes/sphere.cpp \
     shapes/squareringdrawer.cpp \
-    shapes/trianglestripdrawer.cpp
+    shapes/trianglestripdrawer.cpp \
+    shapes/column.cpp \
+    scenegraph/waluigiscene.cpp
 
 HEADERS += \
     gl/shaders/Shader.h \
@@ -98,7 +100,9 @@ HEADERS += \
     shapes/shapeutil.h \
     shapes/sphere.h \
     shapes/squareringdrawer.h \
-    shapes/trianglestripdrawer.h
+    shapes/trianglestripdrawer.h \
+    shapes/column.h \
+    scenegraph/waluigiscene.h
 
 DEFINES += _USE_MATH_DEFINES
 DEFINES += TIXML_USE_STL

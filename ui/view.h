@@ -11,6 +11,8 @@
 
 #include "gl/datatype/FBO.h"
 #include "camera/QuaternionCamera.h"
+#include "scenegraph/OpenGLScene.h"
+#include "scenegraph/waluigiscene.h"
 
 class SceneviewScene;
 
@@ -27,7 +29,7 @@ private:
     bool m_captureMouse;
     bool m_keys[68836];
 
-    std::unique_ptr<SceneviewScene> m_scene;
+    std::unique_ptr<WaluigiScene> m_scene;
     QuaternionCamera m_camera;
 
     float m_near, m_far;
@@ -72,6 +74,9 @@ private:
 
     // updates current controller inputs
     void updateInputs();
+
+    // handler for button pressed events
+    void checkPress();
 
     // mouse and keyboard events
     void mousePressEvent(QMouseEvent *event);

@@ -50,43 +50,19 @@ public:
     // pointer.  This will be used during the "modeler" lab, so don't worry about it for now.
     void setSelection(int x, int y);
 
-    void setLeftHand(glm::mat4x4 transform);
-    void setRightHand(glm::mat4x4 transform);
-    void setLeftHandVelocity(glm::vec3 velocity);
-    void setRightHandVelocity(glm::vec3 velocity);
 
-private:
-
-
-private:
+protected:
 
     void loadPhongShader();
-    void setSceneUniforms(glm::mat4x4 &projectionMatrix, glm::mat4x4 &viewMatrix);
-    void setLights();
-    void renderGeometry();
-    void updateControllerMaterial(PrimitiveNode hand);
-    void drawHand(PrimitiveNode hand);
-
-    void drawTestSphere(int x);
+    virtual void setSceneUniforms(glm::mat4x4 &projectionMatrix, glm::mat4x4 &viewMatrix);
+    virtual void setLights();
+    virtual void renderGeometry();
 
     std::unique_ptr<CS123::GL::CS123Shader> m_phongShader;
     std::unique_ptr<Cube> m_cube;
     std::unique_ptr<Sphere> m_sphere;
     std::unique_ptr<Cylinder> m_cylinder;
     std::unique_ptr<Cone> m_cone;
-
-    std::unique_ptr<Sphere> m_handShape;
-    PrimitiveNode m_leftHand;
-    PrimitiveNode m_rightHand;
-    CS123SceneMaterial m_material;
-    bool didSetMaterial = false;
-
-    std::unique_ptr<Sphere> m_testSphere;
-    int m_testNum;
-
-    float m_time;
-    glm::vec3 m_leftVel;
-    glm::vec3 m_rightVel;
 
 };
 
