@@ -38,10 +38,11 @@ bool OpenGLShape::isEquals(int p1, int p2, int p3, int shapeType) {
 }
 
 void OpenGLShape::initialize() {
-    int elementsPerVertex = 6; // 3 position coordinates and 3 normal coordinates
+    int elementsPerVertex = 8; // 3 position coordinates and 3 normal coordinates and 2 texture coordinates
     this->setVertexData(&m_coordinates[0], m_coordinates.size(), VBO::GEOMETRY_LAYOUT::LAYOUT_TRIANGLE_STRIP, m_coordinates.size() / elementsPerVertex);
     this->setAttribute(ShaderAttrib::POSITION, 3, 0, VBOAttribMarker::DATA_TYPE::FLOAT, false);
     this->setAttribute(ShaderAttrib::NORMAL, 3, 12, VBOAttribMarker::DATA_TYPE::FLOAT, false);
+    this->setAttribute(ShaderAttrib::TEXCOORD0, 2, 24, VBOAttribMarker::DATA_TYPE::FLOAT, false);
     this->buildVAO();
 }
 
@@ -93,4 +94,9 @@ void OpenGLShape::pushCoord(glm::vec3 coord) {
     m_coordinates.push_back(coord.x);
     m_coordinates.push_back(coord.y);
     m_coordinates.push_back(coord.z);
+}
+
+void OpenGLShape::pushCoord(glm::vec2 coord) {
+    m_coordinates.push_back(coord.x);
+    m_coordinates.push_back(coord.y);
 }

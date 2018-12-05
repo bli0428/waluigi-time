@@ -58,6 +58,7 @@ void Sphere::generateStrip(float phiStart, float phiEnd) {
     for (glm::vec3 coord : coords) {
         OpenGLShape::pushCoord(coord);
         OpenGLShape::pushCoord(coord * 2.f);
+        OpenGLShape::pushCoord(glm::vec2(0, 0));
     }
 }
 

@@ -60,8 +60,11 @@ void Cone::generateSide(float startArcAngle, float endArcAngle) {
     for (int i = 0; i < static_cast<int>(coords.size()); i += 2) {
         OpenGLShape::pushCoord(coords[i]);
         OpenGLShape::pushCoord(glm::vec3(glm::cos(startArcAngle) * normalXZ, normalY, glm::sin(startArcAngle) * normalXZ));
+        OpenGLShape::pushCoord(glm::vec2(0, 0));
+
         OpenGLShape::pushCoord(coords[i+1]);
         OpenGLShape::pushCoord(glm::vec3(glm::cos(endArcAngle) * normalXZ, normalY, glm::sin(endArcAngle) * normalXZ));
+        OpenGLShape::pushCoord(glm::vec2(0, 0));
     }
 }
 
@@ -76,5 +79,6 @@ void Cone::generateBase() {
     for (glm::vec3 coord : coords) {
         OpenGLShape::pushCoord(coord);
         OpenGLShape::pushCoord(glm::vec3(0, -1, 0));
+        OpenGLShape::pushCoord(glm::vec2(0, 0));
     }
 }

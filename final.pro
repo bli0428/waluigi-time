@@ -109,7 +109,9 @@ DEFINES += TIXML_USE_STL
 DEFINES += GLM_SWIZZLE GLM_FORCE_RADIANS
 OTHER_FILES += \
     images/* \
-    shaders/*
+    shaders/* \
+    shaders/texture.frag \
+    shaders/texture.vert
 
 FORMS += ui/mainwindow.ui
 INCLUDEPATH += glm lib libraries libraries/openvr/headers shapes ui glew-1.10.0/include

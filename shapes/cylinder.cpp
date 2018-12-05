@@ -48,6 +48,7 @@ void Cylinder::generateCap(float y, bool reverse) {
     for (glm::vec3 coord : coords) {
         OpenGLShape::pushCoord(coord);
         OpenGLShape::pushCoord(glm::vec3(0, 2*y, 0));
+        OpenGLShape::pushCoord(glm::vec2(0, 0));
     }
 }
 
@@ -64,5 +65,6 @@ void Cylinder::generateRing(float upperY, float lowerY) {
     for (glm::vec3 coord : coords) {
         OpenGLShape::pushCoord(coord);
         OpenGLShape::pushCoord(glm::vec3(coord.x * 2.f, 0, coord.z * 2.f));
+        OpenGLShape::pushCoord(glm::vec2(0, 0));
     }
 }

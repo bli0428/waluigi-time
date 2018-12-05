@@ -36,6 +36,7 @@ protected:
                       bool normalize);
 
     void pushCoord(glm::vec3 coord);
+    void pushCoord(glm::vec2 coord);
 
     /** Build the VAO given the specified vertex data and atrributes */
     void buildVAO();

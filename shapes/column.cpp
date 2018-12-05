@@ -59,6 +59,12 @@ glm::vec3 Column::getPosition(int level, int wedge) {
     return pos;
 }
 
+/**
+ * @brief Column::getNormal Returns the normal given a level number and # of wedges rotated.
+ * @param level
+ * @param wedge
+ * @return
+ */
 glm::vec3 Column::getNormal(int level, int wedge) {
     if (level > m_p1) {
         level = 0;
@@ -118,18 +124,12 @@ void Column::generateCap() {
     glm::vec3 center = glm::vec3(0, 0.5, 0);
 
     for (int i = 0; i < m_p2; i++) {
-        OpenGLShape::pushCoord(center);
-        OpenGLShape::pushCoord(glm::vec3(0, 1, 0)); // normal
-
-        OpenGLShape::pushCoord(this->getPosition(0, i));
-        OpenGLShape::pushCoord(this->getNormal(0, i)); // normal
-
-        OpenGLShape::pushCoord(this->getPosition(0, i+1));
-        OpenGLShape::pushCoord(this->getNormal(0, i+1)); // normal
+        this->addVertex(center, glm::vec3(0, 1, 0), glm::vec2(0, 0)); // draw back to center
+        this->addVertex(this->getPosition(0, i), this->getNormal(0, i), glm::vec2(0, 0)); // draw out to circumference
+        this->addVertex(this->getPosition(0, i+1), this->getNormal(0, i+1), glm::vec2(0, 0)); // draw one wedge over on circumference
     }
 
-    OpenGLShape::pushCoord(center);
-    OpenGLShape::pushCoord(glm::vec3(0, 1, 0)); // normal
+    this->addVertex(center, glm::vec3(0, 1, 0), glm::vec2(0, 0)); // draw back to center to close
 }
 
 /**
@@ -139,10 +139,13 @@ void Column::generateCap() {
 void Column::generateRing(int floor) {
     // push to m_coordinates, along with their normals
     for (int i = 0; i <= m_p2; i++) {
-        OpenGLShape::pushCoord(this->getPosition(floor, i));
-        OpenGLShape::pushCoord(this->getNormal(floor, i));
-
-        OpenGLShape::pushCoord(this->getPosition(floor + 1, i));
-        OpenGLShape::pushCoord(this->getNormal(floor + 1, i));
+        this->addVertex(this->getPosition(floor, i), this->getNormal(floor, i), glm::vec2(0, 0)); // draw on this floor
+        this->addVertex(this->getPosition(floor + 1, i), this->getNormal(floor + 1, i), glm::vec2(0, 0)); // draw one floor down
     }
+}
+
+void Column::addVertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 texture) {
+    OpenGLShape::pushCoord(pos);
+    OpenGLShape::pushCoord(norm);
+    OpenGLShape::pushCoord(texture);
 }

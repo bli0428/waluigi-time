@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<<<<<<< HEAD
-<!-- Written by QtCreator 4.7.2, 2018-12-04T18:19:37. -->
-=======
-<!-- Written by QtCreator 3.0.0, 2018-12-04T17:09:54. -->
->>>>>>> cc6cdef2f7789ddcaefb663e1fd2cd568be8fad0
+<!-- Written by QtCreator 3.0.0, 2018-12-05T17:46:00. -->
 <qtcreator>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
@@ -239,10 +235,6 @@
     <value type="bool" key="Qt4ProjectManager.Qt4RunConfiguration.UseDyldImageSuffix">false</value>
     <value type="bool" key="Qt4ProjectManager.Qt4RunConfiguration.UseTerminal">false</value>
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.UserWorkingDirectory"></value>
-<<<<<<< HEAD
-    <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.UserWorkingDirectory.default">C:/Users/Kairi/Desktop/CS123Final_bli31-jwang73-dwoods/waluigi-time</value>
-=======
->>>>>>> cc6cdef2f7789ddcaefb663e1fd2cd568be8fad0
     <value type="uint" key="RunConfiguration.QmlDebugServerPort">3768</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">true</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">false</value>

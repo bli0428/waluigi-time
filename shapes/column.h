@@ -24,6 +24,7 @@ private:
     void generateOffsets();
     glm::vec3 getPosition(int level, int wedge);
     glm::vec3 getNormal(int level, int wedge);
+    void addVertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 texture);
 
     std::vector<glm::vec3> m_offsets;
 };

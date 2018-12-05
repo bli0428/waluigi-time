@@ -52,8 +52,10 @@ void Cube::generateFace(glm::vec3 start, glm::vec3 downStep, glm::vec3 rightStep
         for (int col = 0; col <= m_p1; col++) {
             this->pushCoord(start + rightStep * static_cast<float>(col) + downStep * static_cast<float>(row));
             this->pushCoord(normal);
+            OpenGLShape::pushCoord(glm::vec2(0, 0));
             this->pushCoord(start + rightStep * static_cast<float>(col) + downStep * static_cast<float>(row + 1));
             this->pushCoord(normal);
+            OpenGLShape::pushCoord(glm::vec2(0, 0));
         }
     }
 }
