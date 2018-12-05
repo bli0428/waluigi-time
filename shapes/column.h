@@ -19,12 +19,12 @@ protected:
 
 private:
     void generateVertices();
-    void generateCap(float y, bool reverse);
-    void generateRing(float upperY, float lowerY);
+    void generateCap();
+    void generateRing(int floor);
     void generateOffsets();
+    glm::vec3 getPosition(int level, int wedge);
+    glm::vec3 getNormal(int level, int wedge);
 
-    TriangleStripDrawer m_stripDrawer;
-    SquareRingDrawer m_ringDrawer;
     std::vector<glm::vec3> m_offsets;
 };
 

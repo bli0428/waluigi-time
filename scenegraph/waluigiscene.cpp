@@ -1,7 +1,7 @@
 #include "waluigiscene.h"
 #include "iostream"
 #include "gl/shaders/CS123Shader.h"
-#include "column.h"
+#include "glm/gtx/transform.hpp"
 
 /**
  * @brief WaluigiScene::WaluigiScene
@@ -10,6 +10,7 @@
  */
 WaluigiScene::WaluigiScene() : SceneviewScene()
 {
+    m_column = std::make_unique<Column>(20, 10);
 }
 
 WaluigiScene::~WaluigiScene() {
@@ -17,15 +18,14 @@ WaluigiScene::~WaluigiScene() {
 }
 
 void WaluigiScene::renderGeometry() {
-    std::unique_ptr<Column> column = std::make_unique<Column>(8, 8);
-    m_phongShader->setUniform("m", glm::mat4x4());
+    m_phongShader->setUniform("m", glm::scale(glm::vec3(1, 4, 1)));
 
     CS123SceneMaterial material = CS123SceneMaterial();
     material.cDiffuse = glm::vec4(0.5f, 0.2f, 0.2f, 0.f);
-    material.cAmbient = glm::vec4(0.3f, 0.f, 0.f, 0.f);
+    material.cAmbient = glm::vec4(0.2f, 0.f, 0.2f, 0.f);
 
     m_phongShader->applyMaterial(material);
-    column->draw();
+    m_column->draw();
 }
 
 void WaluigiScene::setLights() {
@@ -59,6 +59,6 @@ void WaluigiScene::drawHands() {
 
     //now handle the controller stuff-I'll might move this into primitives later,
     //but the hand position needs to be updated every frame, so it might be tough
-    SceneviewScene::drawHand(m_leftHand);
-    SceneviewScene::drawHand(m_rightHand);
+//    SceneviewScene::drawHand(m_leftHand);
+//    SceneviewScene::drawHand(m_rightHand);
 }

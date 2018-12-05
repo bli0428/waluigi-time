@@ -218,7 +218,7 @@ void View::paintGL() {
        } else {
            // no file has been loaded yet, so make a WaluigiScene by default
            m_scene = std::make_unique<WaluigiScene>();
-           m_camera.orientLook(glm::vec4(2, 2, 2, 0), glm::vec4(-1, -1, -1, 0), glm::vec4(0, 1, 0, 0));
+           m_camera.orientLook(glm::vec4(4, 4, 4, 0), glm::vec4(-1, -1, -1, 0), glm::vec4(0, 1, 0, 0));
        }
    }
 }

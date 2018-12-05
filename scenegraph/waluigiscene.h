@@ -2,6 +2,7 @@
 #define WALUIGISCENE_H
 
 #include "SceneviewScene.h"
+#include "column.h"
 
 class WaluigiScene : public SceneviewScene
 {
@@ -13,6 +14,9 @@ protected:
     virtual void setLights() override;
     virtual void renderGeometry() override;
     virtual void drawHands() override;
+
+private:
+    std::unique_ptr<Column> m_column;
 
 };
 
