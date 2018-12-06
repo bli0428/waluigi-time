@@ -3,19 +3,27 @@
 #include "gl/shaders/CS123Shader.h"
 #include "column.h"
 #include "glm/gtx/transform.hpp"
+#include "ResourceLoader.h"
+#include "QImage"
+#include "stdlib.h"
+#include "algorithm"
 
 /**
  * @brief WaluigiScene::WaluigiScene
  * This scene INHERITS from SceneView, so all the VR hand-stuff and the camera/lights/etc initialization is already there. This just overrides how
  * the geometry/lights are done.
  */
-WaluigiScene::WaluigiScene() : SceneviewScene()
+WaluigiScene::WaluigiScene() : SceneviewScene(),
+  m_textureProgramID(0),
+  m_textureID(0),
+  m_time(0.f),
+  m_testNum(1),
+  m_leftPressed(false),
+  m_rightPressed(false)
 {
+    // TODO Refactor this setup later lol
     m_column = std::make_unique<Column>(20, 10);
-    m_time = 0.f;
-    m_testNum = 1;
-    m_leftPressed = false;
-    m_rightPressed = false;
+    this->generateColumns(40, 40, 7.0f, 10);
 }
 
 WaluigiScene::~WaluigiScene() {
@@ -27,16 +35,109 @@ void WaluigiScene::renderGeometry() {
     CS123SceneMaterial material = CS123SceneMaterial();
     material.cDiffuse = glm::vec4(0.5f, 0.2f, 0.2f, 0.f);
     material.cAmbient = glm::vec4(0.2f, 0.f, 0.2f, 0.f);
-
     m_phongShader->applyMaterial(material);
-    m_column->draw();
 
+    // only draws the same column for now; will explore about other options
+    for (ColumnNode node : m_columns) {
+        glm::mat4x4 translate = glm::translate(glm::vec3(node.x, 0, node.z));
+        glm::mat4x4 scale = glm::scale(glm::vec3(node.radius * 2, node.height, node.radius * 2));
+        m_phongShader->setUniform("m", translate * scale);
+        m_column->draw();
+    }
 
 
     m_time += 1.f / 60.f;
     drawBalls();
 
     drawHands();
+}
+
+/**
+ * @brief WaluigiScene::generateColumns Adds ColumnNodes to the thing. Uses poisson disk sampling.
+ * @param width Width of area to generate columsn in
+ * @param height Height ^
+ * @param min Minimum distance between columns
+ * @param k how tightly packed it ends up being
+ */
+void WaluigiScene::generateColumns(int width, int height, float min, int k) {
+    float cellSize = min / glm::sqrt(2.0f);
+    int cellsAcross = std::ceil(width / cellSize);
+    int cellsDown = std::ceil(height / cellSize);
+
+    std::vector<QPoint> grid;
+    grid.resize(cellsAcross * cellsDown, QPoint(-1, -1));
+
+    std::vector<QPoint> samplePoints;
+    std::vector<QPoint> processList;
+
+    QPoint firstPoint = QPoint(static_cast<float>(rand()) / RAND_MAX * width,
+            static_cast<float>(rand()) / RAND_MAX * height);
+    samplePoints.push_back(firstPoint);
+    processList.push_back(firstPoint);
+
+    grid[this->imageToGrid(firstPoint, cellSize, cellsAcross)] = firstPoint;
+
+    while (!processList.empty()) {
+        // get a point from the queue
+        QPoint newPoint = processList.back();
+        processList.pop_back();
+
+        // attempt to make new points for each count of k
+        for (int i = 0; i < k; i++) {
+            QPoint pointAttempt = randPointAround(newPoint, min);
+
+            if (pointAttempt.x() <= width && pointAttempt.x() >= 0 && pointAttempt.y() >= 0 && pointAttempt.y() <= height) {
+                bool isValid = true;
+                int gridIndex = imageToGrid(pointAttempt, cellSize, cellsAcross);
+                if (grid[gridIndex].x() >= 0) {
+                    continue;
+                }
+
+                std::vector<int> cellsToCheck;
+                cellsToCheck.reserve(8);
+                cellsToCheck.push_back(gridIndex + 1); // to the right
+                cellsToCheck.push_back(gridIndex - 1); // to the left
+                cellsToCheck.push_back(gridIndex + cellsAcross); // below
+                cellsToCheck.push_back(gridIndex - cellsAcross); // down
+                cellsToCheck.push_back(gridIndex + cellsAcross + 1); // southeast
+                cellsToCheck.push_back(gridIndex + cellsAcross - 1); // southwest
+                cellsToCheck.push_back(gridIndex - cellsAcross + 1); // northeast
+                cellsToCheck.push_back(gridIndex - cellsAcross - 1); // northwest
+
+                for (int neighboring : cellsToCheck) {
+                    if (grid[neighboring].x() >= 0) {
+                        if (glm::distance(glm::vec2(pointAttempt.x(), pointAttempt.y()), glm::vec2(grid[neighboring].x(), grid[neighboring].y())) < min) {
+                            isValid = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (isValid) {
+                    samplePoints.push_back(pointAttempt);
+                    processList.push_back(pointAttempt);
+                    grid[gridIndex] = pointAttempt;
+                }
+            }
+        }
+    }
+
+    for (QPoint point : samplePoints) {
+        m_columns.push_back(ColumnNode{10.0f, 0.5f, point.x(), point.y()});
+    }
+}
+
+int WaluigiScene::imageToGrid(QPoint point, float cellSize, int cellsAcross) {
+    int x = static_cast<int>(point.x() / cellSize);
+    int y = static_cast<int>(point.y() / cellSize);
+    return x * cellsAcross + y;
+}
+
+QPoint WaluigiScene::randPointAround(QPoint newPoint, float min) {
+    float r = min * (static_cast<float>(rand()) / RAND_MAX + 1);
+    float angle = 2 * 3.141592 * static_cast<float>(rand()) / RAND_MAX;
+
+    return QPoint(newPoint.x() + r * glm::cos(angle), newPoint.y() + r * glm::sin(angle));
 }
 
 void WaluigiScene::setLights() {

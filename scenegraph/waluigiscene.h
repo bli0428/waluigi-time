@@ -3,6 +3,15 @@
 
 #include "SceneviewScene.h"
 #include "column.h"
+#include "sphere.h"
+#include "QPoint"
+
+struct ColumnNode {
+   float height;
+   float radius;
+   int x;
+   int z;
+};
 
 class WaluigiScene : public SceneviewScene
 {
@@ -27,6 +36,10 @@ private:
     void drawBalls();
     void drawBall(float time, glm::vec3 vel, glm::mat4x4 pos);
 
+    void generateColumns(int width, int height, float min, int k);
+    int imageToGrid(QPoint point, float cellSize, int cellsAcross);
+    QPoint randPointAround(QPoint newPoint, float min);
+
     void drawTestSphere(int x);
     std::unique_ptr<Sphere> m_handShape;
     PrimitiveNode m_leftHand;
@@ -46,8 +59,11 @@ private:
     bool m_leftPressed;
     bool m_rightPressed;
 
-private:
+    GLuint m_textureProgramID;
+    GLuint m_textureID;
+
     std::unique_ptr<Column> m_column;
+    std::vector<ColumnNode> m_columns;
 
 };
 
