@@ -13,6 +13,12 @@ struct ColumnNode {
    int z;
 };
 
+struct Fireball {
+    float time;
+    glm::vec3 velocity;
+    glm::vec3 position;
+};
+
 class WaluigiScene : public SceneviewScene
 {
 public:
@@ -24,6 +30,8 @@ public:
     void setRightHandVelocity(glm::vec3 velocity);
     void setTrigger(int controllerNum, bool pressed);
 
+    QList<Fireball*> Fireballs;
+
 protected:
     virtual void setLights() override;
     virtual void renderGeometry() override;
@@ -34,7 +42,7 @@ private:
     void updateControllerMaterial(PrimitiveNode hand);
     void drawHand(PrimitiveNode hand);
     void drawBalls();
-    void drawBall(float time, glm::vec3 vel, glm::mat4x4 pos);
+    void drawBall(Fireball *fireball);
 
     void generateColumns(int width, int height, float min, int k);
     int imageToGrid(QPoint point, float cellSize, int cellsAcross);
@@ -51,7 +59,7 @@ private:
     int m_testNum;
     QList<float> m_ballTimes;
     QList<glm::vec3> m_ballVelocities;
-    QList<glm::mat4x4> m_ballPositions;
+    QList<glm::vec3> m_ballPositions;
 
     float m_time;
     glm::vec3 m_leftVel;
