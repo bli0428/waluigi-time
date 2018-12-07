@@ -22,8 +22,9 @@ WaluigiScene::WaluigiScene() : SceneviewScene(),
   m_rightPressed(false)
 {
     // TODO Refactor this setup later lol
-    m_column = std::make_unique<Column>(20, 10);
-    this->generateColumns(40, 40, 7.0f, 10);
+    m_column = std::make_unique<Column>(30, 20);
+    m_floor = std::make_unique<Cube>(1, 1, 1);
+    this->generateColumns(60, 60, 5.0f, 30);
 }
 
 WaluigiScene::~WaluigiScene() {
@@ -39,12 +40,14 @@ void WaluigiScene::renderGeometry() {
 
     // only draws the same column for now; will explore about other options
     for (ColumnNode node : m_columns) {
-        glm::mat4x4 translate = glm::translate(glm::vec3(node.x, 0, node.z));
+        glm::mat4x4 translate = glm::translate(glm::vec3(node.x, node.height / 2.0f - 2, node.z));
         glm::mat4x4 scale = glm::scale(glm::vec3(node.radius * 2, node.height, node.radius * 2));
         m_phongShader->setUniform("m", translate * scale);
         m_column->draw();
     }
 
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, -1, 0)) * glm::scale(glm::vec3(100, 0.1, 100)));
+    m_floor->draw();
 
     m_time += 1.f / 60.f;
     drawBalls();
@@ -123,7 +126,7 @@ void WaluigiScene::generateColumns(int width, int height, float min, int k) {
     }
 
     for (QPoint point : samplePoints) {
-        m_columns.push_back(ColumnNode{10.0f, 0.5f, point.x(), point.y()});
+        m_columns.push_back(ColumnNode{25.0f, 1.0f, point.x() - 30, point.y() - 30});
     }
 }
 
@@ -173,12 +176,12 @@ void WaluigiScene::drawHands() {
 
     //now handle the controller stuff-I'll might move this into primitives later,
     //but the hand position needs to be updated every frame, so it might be tough
-    if(m_leftPressed) {
+//    if(m_leftPressed) {
         drawHand(m_leftHand);
-    }
-    if(m_rightPressed) {
+//    }
+//    if(m_rightPressed) {
         drawHand(m_rightHand);
-    }
+//    }
 }
 
 void WaluigiScene::drawBalls() {

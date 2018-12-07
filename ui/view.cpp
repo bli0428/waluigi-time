@@ -79,7 +79,7 @@ void View::initializeGL() {
     glClearColor(0.f, 0.f, 0.f, 1.f);
 
     m_near = 0.1f;
-    m_far = 30.0f;
+    m_far = 1000.0f;
 
     initVR();
 

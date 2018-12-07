@@ -4,6 +4,7 @@
 #include "SceneviewScene.h"
 #include "column.h"
 #include "sphere.h"
+#include "Cube.h"
 #include "QPoint"
 
 struct ColumnNode {
@@ -23,7 +24,7 @@ class WaluigiScene : public SceneviewScene
 {
 public:
     WaluigiScene();
-    virtual ~WaluigiScene();
+    virtual ~WaluigiScene() override;
     void setLeftHand(glm::mat4x4 transform);
     void setRightHand(glm::mat4x4 transform);
     void setLeftHandVelocity(glm::vec3 velocity);
@@ -71,6 +72,7 @@ private:
     GLuint m_textureID;
 
     std::unique_ptr<Column> m_column;
+    std::unique_ptr<Cube> m_floor;
     std::vector<ColumnNode> m_columns;
 
 };

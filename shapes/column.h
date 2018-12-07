@@ -26,7 +26,7 @@ private:
     glm::vec3 getNormal(int level, int wedge);
     void addVertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 texture);
 
-    std::vector<glm::vec3> m_offsets;
+    std::vector<glm::vec2> m_offsets;
 };
 
 #endif // COLUMN_H

@@ -26,8 +26,7 @@ void Column::generateOffsets() {
     for (int i = 0; i < numVertices; i++) {
         float randX = static_cast<float>(rand()) / RAND_MAX * 2.0f;
         float randY = static_cast<float>(rand()) / RAND_MAX * 2.0f;
-        float randZ = static_cast<float>(rand()) / RAND_MAX * 2.0f;
-        m_offsets.push_back(glm::vec3(randX - 1.0f, randY - 1.0f, randZ - 1.0f));
+        m_offsets.push_back(glm::vec2(randX - 1.0f, randY - 1.0f));
     }
 }
 
@@ -50,11 +49,13 @@ glm::vec3 Column::getPosition(int level, int wedge) {
     pos.x = glm::cos(theta) * 0.5;
     pos.z = glm::sin(theta) * 0.5;
 
-    glm::vec3 offset = m_offsets[level * m_p2 + wedge];
+    glm::vec2 offset = m_offsets[level * m_p2 + wedge];
     offset.y /= m_p1;
-    offset.x /= m_p2 * 1.3;
-    offset.z /= m_p2 * 1.3;
-    pos += offset;
+    offset.x /= m_p2;
+
+    glm::vec3 projected = glm::vec3(pos.x, 0.0f, pos.z);
+    pos += projected * offset.x;
+    pos.y += offset.y;
 
     return pos;
 }
@@ -110,9 +111,6 @@ void Column::generateVertices() {
     for (int i = 0; i < m_p1; i++) {
         this->generateRing(i);
     }
-
-    // then draw the bottom cap... do we really need this lol
-    // this->generateCap(-0.5, false);
 }
 
 /**
