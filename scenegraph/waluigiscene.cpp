@@ -31,7 +31,7 @@ WaluigiScene::~WaluigiScene() {
 void WaluigiScene::initScene() {
     // this is all texture stuff
     //m_textureProgramID = ResourceLoader::createShaderProgram(":../shaders/texture.vert", ":../shaders/texture.frag");
-    QImage image("WHAT GOES HERE ASDJFKKLASJ;DFL;JALF");
+    QImage image("/course/cs1230/data/scenes/shared/textures/grass.JPG");
     std::cout << image.width() << std::endl;
 //    for (int i = 0; i = image.width(); i++) {
 //        std::cout << QColor(image.pixel(0, i)).red() << std::endl;
@@ -55,13 +55,13 @@ void WaluigiScene::renderGeometry() {
 
     m_phongShader->setUniform("m", glm::scale(glm::vec3(1, 5, 1)));
     CS123SceneMaterial material = CS123SceneMaterial();
-    material.cDiffuse = glm::vec4(0.5f, 0.2f, 0.2f, 0.f);
-    material.cAmbient = glm::vec4(0.2f, 0.f, 0.2f, 0.f);
+    material.cDiffuse = glm::vec4(0.2f, 0.8f, 0.2f, 0.f);
+    material.cAmbient = glm::vec4(0.0f, 0.2f, 0.0f, 0.f);
     m_phongShader->applyMaterial(material);
 
     // draw the columns
     m_phongShader->setUniform("useTexture", 1);
-    m_phongShader->setUniform("repeatUV", glm::vec2(1, 1));
+    m_phongShader->setUniform("repeatUV", glm::vec2(2, 5));
     glBindTexture(GL_TEXTURE_2D, m_textureID);
     // only draws the same column for now; will explore about other options
     for (ColumnNode node : m_columns) {
