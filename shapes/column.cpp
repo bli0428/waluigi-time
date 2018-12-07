@@ -13,9 +13,6 @@ Column::Column(int p1, int p2) :
     OpenGLShape(p1, p2 < 3 ? 3 : p2, 1, 3)
 {
     this->initialize();
-
-    std::cout << this->getPosition(20, 0, true).x << this->getPosition(20, 0, true).y << std::endl;
-    std::cout << this->getUV(this->getPosition(20, 0, true)).x << this->getUV(this->getPosition(20, 0, true)).y << std::endl;
 }
 
 void Column::initialize() {
@@ -146,7 +143,7 @@ void Column::generateRing(int floor) {
     // push to m_coordinates, along with their normals
     for (int i = 0; i <= m_p2; i++) {
         this->addVertex(this->getPosition(floor, i), this->getNormal(floor, i), getUV(this->getPosition(floor, i, true))); // draw on this floor
-        this->addVertex(this->getPosition(floor + 1, i), this->getNormal(floor + 1, i), getUV(this->getPosition(floor, i, true))); // draw one floor down
+        this->addVertex(this->getPosition(floor + 1, i), this->getNormal(floor + 1, i), getUV(this->getPosition(floor + 1, i, true))); // draw one floor down
     }
 }
 

@@ -398,8 +398,10 @@ void View::tick() {
     updateInputs();
     checkPress();
 
-    for (Fireball *fireball : m_scene->Fireballs) {
-        fireball->time += 1.f/60.f;
+    if (m_scene) {
+        for (Fireball *fireball : m_scene->Fireballs) {
+            fireball->time += 1.f/60.f;
+        }
     }
 
     /* Flag this view for repainting (Qt will call paintGL() soon after) */

@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'view.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.7.1)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.10.1)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,12 +12,14 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'view.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.7.1. It"
+#error "This file was generated using the moc from 5.10.1. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
 QT_BEGIN_MOC_NAMESPACE
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_View_t {
     QByteArrayData data[4];
     char stringdata0[20];
@@ -77,9 +79,9 @@ void View::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void *
     Q_UNUSED(_a);
 }
 
-const QMetaObject View::staticMetaObject = {
+QT_INIT_METAOBJECT const QMetaObject View::staticMetaObject = {
     { &QGLWidget::staticMetaObject, qt_meta_stringdata_View.data,
-      qt_meta_data_View,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
+      qt_meta_data_View,  qt_static_metacall, nullptr, nullptr}
 };
 
 
@@ -90,9 +92,9 @@ const QMetaObject *View::metaObject() const
 
 void *View::qt_metacast(const char *_clname)
 {
-    if (!_clname) return Q_NULLPTR;
+    if (!_clname) return nullptr;
     if (!strcmp(_clname, qt_meta_stringdata_View.stringdata0))
-        return static_cast<void*>(const_cast< View*>(this));
+        return static_cast<void*>(this);
     return QGLWidget::qt_metacast(_clname);
 }
 
@@ -112,4 +114,5 @@ int View::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     }
     return _id;
 }
+QT_WARNING_POP
 QT_END_MOC_NAMESPACE

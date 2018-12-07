@@ -31,7 +31,7 @@ WaluigiScene::~WaluigiScene() {
 void WaluigiScene::initScene() {
     // this is all texture stuff
     //m_textureProgramID = ResourceLoader::createShaderProgram(":../shaders/texture.vert", ":../shaders/texture.frag");
-    QImage image("/course/cs1230/data/scenes/shared/textures/woodTexture.jpg");
+    QImage image("WHAT GOES HERE ASDJFKKLASJ;DFL;JALF");
     std::cout << image.width() << std::endl;
 //    for (int i = 0; i = image.width(); i++) {
 //        std::cout << QColor(image.pixel(0, i)).red() << std::endl;
@@ -61,7 +61,7 @@ void WaluigiScene::renderGeometry() {
 
     // draw the columns
     m_phongShader->setUniform("useTexture", 1);
-    m_phongShader->setUniform("repeatUV", glm::vec2(3, 25));
+    m_phongShader->setUniform("repeatUV", glm::vec2(1, 1));
     glBindTexture(GL_TEXTURE_2D, m_textureID);
     // only draws the same column for now; will explore about other options
     for (ColumnNode node : m_columns) {
