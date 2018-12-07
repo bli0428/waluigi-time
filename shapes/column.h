@@ -22,7 +22,7 @@ private:
     void generateCap();
     void generateRing(int floor);
     void generateOffsets();
-    glm::vec3 getPosition(int level, int wedge);
+    glm::vec3 getPosition(int level, int wedge, bool raw);
     glm::vec3 getNormal(int level, int wedge);
     void addVertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 texture);
     glm::vec2 getUV(glm::vec3 point);

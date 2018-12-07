@@ -4,6 +4,8 @@
 #include <iostream>
 #include <utility>
 
+#include <iostream>
+
 #include "glm/gtc/type_ptr.hpp"
 
 #include "gl/GLDebug.h"

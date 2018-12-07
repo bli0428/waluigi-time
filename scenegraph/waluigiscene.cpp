@@ -21,23 +21,48 @@ WaluigiScene::WaluigiScene() : SceneviewScene(),
   m_leftPressed(false),
   m_rightPressed(false)
 {
-    // TODO Refactor this setup later lol
+    this->initScene();
+}
+
+WaluigiScene::~WaluigiScene() {
+    glDeleteTextures(1, &m_textureID);
+}
+
+void WaluigiScene::initScene() {
+    // this is all texture stuff
+    //m_textureProgramID = ResourceLoader::createShaderProgram(":../shaders/texture.vert", ":../shaders/texture.frag");
+    QImage image("/course/cs1230/data/scenes/shared/textures/woodTexture.jpg");
+    std::cout << image.width() << std::endl;
+//    for (int i = 0; i = image.width(); i++) {
+//        std::cout << QColor(image.pixel(0, i)).red() << std::endl;
+//    }
+
+
+    glGenTextures(1, &m_textureID);
+    glBindTexture(GL_TEXTURE_2D, m_textureID);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.bits());
+
+    // this is actual geometry stuff
     m_column = std::make_unique<Column>(30, 20);
     m_floor = std::make_unique<Cube>(1, 1, 1);
     this->generateColumns(M_FIELDLENGTH, M_FIELDLENGTH, M_COLUMNMINDIST, M_COLUMNK);
 }
 
-WaluigiScene::~WaluigiScene() {
-
-}
-
 void WaluigiScene::renderGeometry() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     m_phongShader->setUniform("m", glm::scale(glm::vec3(1, 5, 1)));
     CS123SceneMaterial material = CS123SceneMaterial();
     material.cDiffuse = glm::vec4(0.5f, 0.2f, 0.2f, 0.f);
     material.cAmbient = glm::vec4(0.2f, 0.f, 0.2f, 0.f);
     m_phongShader->applyMaterial(material);
 
+    // draw the columns
+    m_phongShader->setUniform("useTexture", 1);
+    m_phongShader->setUniform("repeatUV", glm::vec2(3, 25));
+    glBindTexture(GL_TEXTURE_2D, m_textureID);
     // only draws the same column for now; will explore about other options
     for (ColumnNode node : m_columns) {
         glm::mat4x4 translate = glm::translate(glm::vec3(node.x, node.height / 2.0f - 2, node.z));
@@ -46,6 +71,8 @@ void WaluigiScene::renderGeometry() {
         m_column->draw();
     }
 
+    // draw the floor
+    m_phongShader->setUniform("useTexture", 0);
     m_phongShader->setUniform("m", glm::translate(glm::vec3(0, -1, 0)) * glm::scale(glm::vec3(500, 0.1, 500)));
     m_floor->draw();
 

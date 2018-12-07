@@ -13,6 +13,9 @@ Column::Column(int p1, int p2) :
     OpenGLShape(p1, p2 < 3 ? 3 : p2, 1, 3)
 {
     this->initialize();
+
+    std::cout << this->getPosition(20, 0, true).x << this->getPosition(20, 0, true).y << std::endl;
+    std::cout << this->getUV(this->getPosition(20, 0, true)).x << this->getUV(this->getPosition(20, 0, true)).y << std::endl;
 }
 
 void Column::initialize() {
@@ -31,7 +34,7 @@ void Column::generateOffsets() {
     }
 }
 
-glm::vec3 Column::getPosition(int level, int wedge) {
+glm::vec3 Column::getPosition(int level, int wedge, bool raw = false) {
     // wrap around
     if (level > m_p1) {
         level = 0;
@@ -49,6 +52,10 @@ glm::vec3 Column::getPosition(int level, int wedge) {
 
     pos.x = glm::cos(theta) * 0.5;
     pos.z = glm::sin(theta) * 0.5;
+
+    if (!raw || raw) {
+        return pos;
+    }
 
     glm::vec2 offset = m_offsets[level * m_p2 + wedge];
     offset.y /= m_p1 * 2;
@@ -123,12 +130,12 @@ void Column::generateCap() {
     glm::vec3 center = glm::vec3(0, 0.5, 0);
 
     for (int i = 0; i < m_p2; i++) {
-        this->addVertex(center, glm::vec3(0, 1, 0), glm::vec2(0, 0)); // draw back to center
-        this->addVertex(this->getPosition(0, i), this->getNormal(0, i), glm::vec2(0, 0)); // draw out to circumference
-        this->addVertex(this->getPosition(0, i+1), this->getNormal(0, i+1), glm::vec2(0, 0)); // draw one wedge over on circumference
+        this->addVertex(center, glm::vec3(0, 1, 0), getUV(glm::vec3(0, 1, 0))); // draw back to center
+        this->addVertex(this->getPosition(0, i), this->getNormal(0, i), getUV(this->getPosition(0, i, true))); // draw out to circumference
+        this->addVertex(this->getPosition(0, i+1), this->getNormal(0, i+1), getUV(this->getPosition(0, i+1, true))); // draw one wedge over on circumference
     }
 
-    this->addVertex(center, glm::vec3(0, 1, 0), glm::vec2(0, 0)); // draw back to center to close
+    this->addVertex(center, glm::vec3(0, 1, 0), getUV(glm::vec3(0, 1, 0))); // draw back to center to close
 }
 
 /**
@@ -138,8 +145,8 @@ void Column::generateCap() {
 void Column::generateRing(int floor) {
     // push to m_coordinates, along with their normals
     for (int i = 0; i <= m_p2; i++) {
-        this->addVertex(this->getPosition(floor, i), this->getNormal(floor, i), glm::vec2(0, 0)); // draw on this floor
-        this->addVertex(this->getPosition(floor + 1, i), this->getNormal(floor + 1, i), glm::vec2(0, 0)); // draw one floor down
+        this->addVertex(this->getPosition(floor, i), this->getNormal(floor, i), getUV(this->getPosition(floor, i, true))); // draw on this floor
+        this->addVertex(this->getPosition(floor + 1, i), this->getNormal(floor + 1, i), getUV(this->getPosition(floor, i, true))); // draw one floor down
     }
 }
 

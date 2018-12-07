@@ -3,4 +3,7 @@
         <file alias="shader.frag">shaders/shader.frag</file>
         <file alias="shader.vert">shaders/shader.vert</file>
     </qresource>
+    <qresource prefix="/images">
+        <file>images/ostrich.jpg</file>
+    </qresource>
 </RCC>

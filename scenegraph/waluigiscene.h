@@ -44,6 +44,7 @@ private:
     void drawBalls();
     void drawBall(Fireball *fireball);
 
+    void initScene();
     void generateColumns(int width, int height, float min, int k);
     int imageToGrid(glm::vec2 point, float cellSize, int cellsAcross);
     glm::vec2 randPointAround(glm::vec2 newPoint, float min);
