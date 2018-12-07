@@ -5,13 +5,12 @@
 #include "column.h"
 #include "sphere.h"
 #include "Cube.h"
-#include "QPoint"
 
 struct ColumnNode {
    float height;
    float radius;
-   int x;
-   int z;
+   float x;
+   float z;
 };
 
 struct Fireball {
@@ -46,8 +45,8 @@ private:
     void drawBall(Fireball *fireball);
 
     void generateColumns(int width, int height, float min, int k);
-    int imageToGrid(QPoint point, float cellSize, int cellsAcross);
-    QPoint randPointAround(QPoint newPoint, float min);
+    int imageToGrid(glm::vec2 point, float cellSize, int cellsAcross);
+    glm::vec2 randPointAround(glm::vec2 newPoint, float min);
 
     void drawTestSphere(int x);
     std::unique_ptr<Sphere> m_handShape;
@@ -74,6 +73,15 @@ private:
     std::unique_ptr<Column> m_column;
     std::unique_ptr<Cube> m_floor;
     std::vector<ColumnNode> m_columns;
+
+
+    // CONSTANTS
+    const int M_FIELDLENGTH = 60;
+    const float M_COLUMNMINDIST = 5.0f; // min dist between columns
+    const float M_COLUMNK = 30; // columns generated on each run of poisson; higher = more clustered usually
+    const float M_COLUMNHEIGHTAVG = 25.0f;
+    const float M_COLUMNHEIGHTVAR = 5.0f; // variance of columns' heights
+    const float M_COLUMNRADIUSAVG = 1.0f;
 
 };
 

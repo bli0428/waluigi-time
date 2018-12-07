@@ -2,6 +2,7 @@
 #include "glm/trigonometric.hpp"
 #include "stdlib.h"
 #include <iostream>
+#include "algorithm"
 
 /**
  * @brief Column::Column
@@ -24,9 +25,9 @@ void Column::generateOffsets() {
     int numVertices = m_p2 * (m_p1 + 1);
     m_offsets.reserve(numVertices);
     for (int i = 0; i < numVertices; i++) {
-        float randX = static_cast<float>(rand()) / RAND_MAX * 2.0f;
-        float randY = static_cast<float>(rand()) / RAND_MAX * 2.0f;
-        m_offsets.push_back(glm::vec2(randX - 1.0f, randY - 1.0f));
+        float randX = static_cast<float>(rand()) / RAND_MAX * 2;
+        float randY = static_cast<float>(rand()) / RAND_MAX * 2;
+        m_offsets.push_back(glm::vec2(randX - 1, randY - 1)); // results in two numbers between -1 and 1
     }
 }
 
@@ -50,8 +51,8 @@ glm::vec3 Column::getPosition(int level, int wedge) {
     pos.z = glm::sin(theta) * 0.5;
 
     glm::vec2 offset = m_offsets[level * m_p2 + wedge];
-    offset.y /= m_p1;
-    offset.x /= m_p2;
+    offset.y /= m_p1 * 2;
+    offset.x = (offset.x * 2 - 1) / M_SMOOTHNESS;
 
     glm::vec3 projected = glm::vec3(pos.x, 0.0f, pos.z);
     pos += projected * offset.x;
@@ -146,4 +147,26 @@ void Column::addVertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 texture) {
     OpenGLShape::pushCoord(pos);
     OpenGLShape::pushCoord(norm);
     OpenGLShape::pushCoord(texture);
+}
+
+glm::vec2 Column::getUV(glm::vec3 point) {
+    float epsilon = 0.001f;
+
+    // top cap
+    if (std::abs(point.y - 0.5) < epsilon) {
+        return glm::vec2(point.x + 0.5f, point.z + 0.5f);
+
+    // bottom cap
+    } else if (std::abs(point.y + 0.5) < epsilon) {
+        return glm::vec2(point.x + 0.5f, 0.5f - point.z);
+
+    // body
+    } else {
+        float theta = atan2(point.z, point.x);
+        if (theta < 0) {
+            return glm::vec2(-theta / (2.f * 3.14159f), 0.5f - point.y);
+        } else {
+            return glm::vec2(1.f - theta / (2.f * 3.14159f), 0.5f - point.y);
+        }
+    }
 }

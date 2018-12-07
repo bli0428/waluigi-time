@@ -24,7 +24,7 @@ WaluigiScene::WaluigiScene() : SceneviewScene(),
     // TODO Refactor this setup later lol
     m_column = std::make_unique<Column>(30, 20);
     m_floor = std::make_unique<Cube>(1, 1, 1);
-    this->generateColumns(60, 60, 5.0f, 30);
+    this->generateColumns(M_FIELDLENGTH, M_FIELDLENGTH, M_COLUMNMINDIST, M_COLUMNK);
 }
 
 WaluigiScene::~WaluigiScene() {
@@ -46,7 +46,7 @@ void WaluigiScene::renderGeometry() {
         m_column->draw();
     }
 
-    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, -1, 0)) * glm::scale(glm::vec3(100, 0.1, 100)));
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, -1, 0)) * glm::scale(glm::vec3(500, 0.1, 500)));
     m_floor->draw();
 
     m_time += 1.f / 60.f;
@@ -67,13 +67,13 @@ void WaluigiScene::generateColumns(int width, int height, float min, int k) {
     int cellsAcross = std::ceil(width / cellSize);
     int cellsDown = std::ceil(height / cellSize);
 
-    std::vector<QPoint> grid;
-    grid.resize(cellsAcross * cellsDown, QPoint(-1, -1));
+    std::vector<glm::vec2> grid;
+    grid.resize(cellsAcross * cellsDown, glm::vec2(-1, -1));
 
-    std::vector<QPoint> samplePoints;
-    std::vector<QPoint> processList;
+    std::vector<glm::vec2> samplePoints;
+    std::vector<glm::vec2> processList;
 
-    QPoint firstPoint = QPoint(static_cast<float>(rand()) / RAND_MAX * width,
+    glm::vec2 firstPoint = glm::vec2(static_cast<float>(rand()) / RAND_MAX * width,
             static_cast<float>(rand()) / RAND_MAX * height);
     samplePoints.push_back(firstPoint);
     processList.push_back(firstPoint);
@@ -82,17 +82,17 @@ void WaluigiScene::generateColumns(int width, int height, float min, int k) {
 
     while (!processList.empty()) {
         // get a point from the queue
-        QPoint newPoint = processList.back();
+        glm::vec2 newPoint = processList.back();
         processList.pop_back();
 
         // attempt to make new points for each count of k
         for (int i = 0; i < k; i++) {
-            QPoint pointAttempt = randPointAround(newPoint, min);
+            glm::vec2 pointAttempt = randPointAround(newPoint, min);
 
-            if (pointAttempt.x() <= width && pointAttempt.x() >= 0 && pointAttempt.y() >= 0 && pointAttempt.y() <= height) {
+            if (pointAttempt.x <= width && pointAttempt.x >= 0 && pointAttempt.y >= 0 && pointAttempt.y <= height) {
                 bool isValid = true;
                 int gridIndex = imageToGrid(pointAttempt, cellSize, cellsAcross);
-                if (grid[gridIndex].x() >= 0) {
+                if (grid[gridIndex].x >= 0) {
                     continue;
                 }
 
@@ -108,8 +108,8 @@ void WaluigiScene::generateColumns(int width, int height, float min, int k) {
                 cellsToCheck.push_back(gridIndex - cellsAcross - 1); // northwest
 
                 for (int neighboring : cellsToCheck) {
-                    if (grid[neighboring].x() >= 0) {
-                        if (glm::distance(glm::vec2(pointAttempt.x(), pointAttempt.y()), glm::vec2(grid[neighboring].x(), grid[neighboring].y())) < min) {
+                    if (grid[neighboring].x >= 0) {
+                        if (glm::distance(glm::vec2(pointAttempt.x, pointAttempt.y), glm::vec2(grid[neighboring].x, grid[neighboring].y)) < min) {
                             isValid = false;
                             break;
                         }
@@ -125,28 +125,29 @@ void WaluigiScene::generateColumns(int width, int height, float min, int k) {
         }
     }
 
-    for (QPoint point : samplePoints) {
-        m_columns.push_back(ColumnNode{25.0f, 1.0f, point.x() - 30, point.y() - 30});
+    for (glm::vec2 point : samplePoints) {
+        float r = static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f;
+        m_columns.push_back(ColumnNode{M_COLUMNHEIGHTAVG + r * M_COLUMNHEIGHTVAR, M_COLUMNRADIUSAVG, point.x - M_FIELDLENGTH / 2, point.y - M_FIELDLENGTH / 2});
     }
 }
 
-int WaluigiScene::imageToGrid(QPoint point, float cellSize, int cellsAcross) {
-    int x = static_cast<int>(point.x() / cellSize);
-    int y = static_cast<int>(point.y() / cellSize);
+int WaluigiScene::imageToGrid(glm::vec2 point, float cellSize, int cellsAcross) {
+    int x = static_cast<int>(point.x / cellSize);
+    int y = static_cast<int>(point.y / cellSize);
     return x * cellsAcross + y;
 }
 
-QPoint WaluigiScene::randPointAround(QPoint newPoint, float min) {
+glm::vec2 WaluigiScene::randPointAround(glm::vec2 newPoint, float min) {
     float r = min * (static_cast<float>(rand()) / RAND_MAX + 1);
     float angle = 2 * 3.141592 * static_cast<float>(rand()) / RAND_MAX;
 
-    return QPoint(newPoint.x() + r * glm::cos(angle), newPoint.y() + r * glm::sin(angle));
+    return glm::vec2(newPoint.x + r * glm::cos(angle), newPoint.y + r * glm::sin(angle));
 }
 
 void WaluigiScene::setLights() {
     CS123SceneLightData light = CS123SceneLightData();
     light.type = LightType::LIGHT_POINT;
-    light.pos = glm::vec4(0.f, 0.f, 5.f, 1.f);
+    light.pos = glm::vec4(5.f, 10.f, 5.f, 1.f);
     light.color = glm::vec4(1.f, 1.f, 1.f, 1.f);
 
     m_phongShader->setLight(light);
