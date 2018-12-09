@@ -3,5 +3,7 @@
         <file alias="shader.frag">shaders/shader.frag</file>
         <file alias="shader.vert">shaders/shader.vert</file>
         <file>gbuffer.frag</file>
+        <file>gbuffer.vert</file>
+        <file>lightingpass.frag</file>
     </qresource>
 </RCC>

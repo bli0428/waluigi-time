@@ -1,17 +1,12 @@
 #version 400 core
+out vec4 FragColor;
 
-layout(location = 0) in vec3 position; // Position of the vertex
-layout(location = 1) in vec3 normal;   // Normal of the vertex
-layout(location = 5) in vec2 texCoord; // UV texture coordinates
-layout(location = 10) in float arrowOffset; // Sideways offset for billboarded normal arrows
+in vec2 TexCoords;
 
-out vec3 color; // Computed color for this vertex
-out vec2 texc;
+uniform sampler2D gPosition;
+uniform sampler2D gNormal;
+uniform sampler2D gAlbedoSpec;
 
-// Transformation matrices
-uniform mat4 p;
-uniform mat4 v;
-uniform mat4 m;
 
 // Light data
 const int MAX_LIGHTS = 200;
@@ -29,24 +24,16 @@ uniform float shininess;
 uniform vec2 repeatUV;
 
 uniform bool useLighting;     // Whether to calculate lighting using lighting equation
-uniform bool useArrowOffsets; // True if rendering the arrowhead of a normal for Shapes
 
-void main() {
-    texc = texCoord * repeatUV;
+uniform vec3 viewPos;
 
-    vec4 position_cameraSpace = v * m * vec4(position, 1.0);
-    vec4 normal_cameraSpace = vec4(normalize(mat3(transpose(inverse(v * m))) * normal), 0);
-
-
-    vec4 position_worldSpace = m * vec4(position, 1.0);
-    vec4 normal_worldSpace = vec4(normalize(mat3(transpose(inverse(m))) * normal), 0);
-    if (useArrowOffsets) {
-        // Figure out the axis to use in order for the triangle to be billboarded correctly
-        vec3 offsetAxis = normalize(cross(vec3(position_cameraSpace), vec3(normal_cameraSpace)));
-        position_cameraSpace += arrowOffset * vec4(offsetAxis, 0);
-    }
-
-    gl_Position = p * position_cameraSpace;
+void main()
+{
+    // retrieve data from G-buffer
+    vec3 FragPos = texture(gPosition, TexCoords).rgb;
+    vec3 Normal = texture(gNormal, TexCoords).rgb;
+    vec3 Albedo = texture(gAlbedoSpec, TexCoords).rgb;
+    float Specular = texture(gAlbedoSpec, TexCoords).a;
 
     if (useLighting) {
         color = ambient_color.xyz; // Add ambient component
