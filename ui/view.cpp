@@ -223,7 +223,7 @@ void View::paintGL() {
            m_scene->render(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
        } else {
            m_scene = std::make_unique<WaluigiScene>();
-           m_camera.orientLook(glm::vec4(-3, 1, -3, 0), glm::vec4(1, 0, 1, 0), glm::vec4(0, 1, 0, 0));
+           m_camera.orientLook(glm::vec4(-6, 1, -6, 0), glm::vec4(1, 1, 1, 0), glm::vec4(0, 1, 0, 0));
        }
    }
 }

@@ -50,12 +50,12 @@ glm::vec3 Column::getPosition(int level, int wedge, bool raw = false) {
     pos.x = glm::cos(theta) * 0.5;
     pos.z = glm::sin(theta) * 0.5;
 
-    if (!raw || raw) {
+    if (raw) {
         return pos;
     }
 
     glm::vec2 offset = m_offsets[level * m_p2 + wedge];
-    offset.y /= m_p1 * 2;
+    offset.y /= m_p1 * 2 * M_SMOOTHNESS;
     offset.x = (offset.x * 2 - 1) / M_SMOOTHNESS;
 
     glm::vec3 projected = glm::vec3(pos.x, 0.0f, pos.z);

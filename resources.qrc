@@ -4,6 +4,6 @@
         <file alias="shader.vert">shaders/shader.vert</file>
     </qresource>
     <qresource prefix="/images">
-        <file>images/ostrich.jpg</file>
+        <file>images/columnx3.jpg</file>
     </qresource>
 </RCC>

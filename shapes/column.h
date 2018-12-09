@@ -30,7 +30,7 @@ private:
     std::vector<glm::vec2> m_offsets;
 
     // CONSTANTS
-    const float M_SMOOTHNESS = 8.0f; // higher is smoother; 8 is a bit rough, 15 is gentle-smooth
+    const float M_SMOOTHNESS = 25.0f; // higher is smoother
 };
 
 #endif // COLUMN_H

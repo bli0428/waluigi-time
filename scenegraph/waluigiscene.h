@@ -80,7 +80,7 @@ private:
     const int M_FIELDLENGTH = 60;
     const float M_COLUMNMINDIST = 5.0f; // min dist between columns
     const float M_COLUMNK = 30; // columns generated on each run of poisson; higher = more clustered usually
-    const float M_COLUMNHEIGHTAVG = 25.0f;
+    const float M_COLUMNHEIGHTAVG = 20.0f;
     const float M_COLUMNHEIGHTVAR = 5.0f; // variance of columns' heights
     const float M_COLUMNRADIUSAVG = 1.0f;
 

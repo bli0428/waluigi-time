@@ -30,14 +30,7 @@ WaluigiScene::~WaluigiScene() {
 
 void WaluigiScene::initScene() {
     // this is all texture stuff
-    //m_textureProgramID = ResourceLoader::createShaderProgram(":../shaders/texture.vert", ":../shaders/texture.frag");
-    QImage image("/course/cs1230/data/scenes/shared/textures/grass.JPG");
-    std::cout << image.width() << std::endl;
-//    for (int i = 0; i = image.width(); i++) {
-//        std::cout << QColor(image.pixel(0, i)).red() << std::endl;
-//    }
-
-
+    QImage image(":/images/images/columnx3.jpg");
     glGenTextures(1, &m_textureID);
     glBindTexture(GL_TEXTURE_2D, m_textureID);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -55,13 +48,14 @@ void WaluigiScene::renderGeometry() {
 
     m_phongShader->setUniform("m", glm::scale(glm::vec3(1, 5, 1)));
     CS123SceneMaterial material = CS123SceneMaterial();
-    material.cDiffuse = glm::vec4(0.2f, 0.8f, 0.2f, 0.f);
-    material.cAmbient = glm::vec4(0.0f, 0.2f, 0.0f, 0.f);
+    material.cDiffuse = glm::vec4(0.9f, 0.9f, 0.9f, 1.0f);
+    material.cAmbient = glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
     m_phongShader->applyMaterial(material);
 
     // draw the columns
     m_phongShader->setUniform("useTexture", 1);
-    m_phongShader->setUniform("repeatUV", glm::vec2(2, 5));
+    m_phongShader->setUniform("repeatUV", glm::vec2(4, 8));
+    m_phongShader->setUniform("repeatBottomHalf", 1); // column-specific
     glBindTexture(GL_TEXTURE_2D, m_textureID);
     // only draws the same column for now; will explore about other options
     for (ColumnNode node : m_columns) {
@@ -70,6 +64,7 @@ void WaluigiScene::renderGeometry() {
         m_phongShader->setUniform("m", translate * scale);
         m_column->draw();
     }
+    m_phongShader->setUniform("repeatBottomHalf", 0); // unset the hack so other textures don't get weird
 
     // draw the floor
     m_phongShader->setUniform("useTexture", 0);

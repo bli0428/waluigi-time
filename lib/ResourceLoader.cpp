@@ -2,6 +2,7 @@
 #include <QFile>
 #include <QString>
 #include <QTextStream>
+#include <iostream>
 
 std::string ResourceLoader::loadResourceFileToString(const std::string &resourcePath)
 {
