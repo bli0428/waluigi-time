@@ -14,8 +14,12 @@
  * the geometry/lights are done.
  */
 WaluigiScene::WaluigiScene() : SceneviewScene(),
-  m_textureProgramID(0),
-  m_textureID(0),
+  m_columnTexID(0),
+  m_zPosTexID(0),
+  m_xPosTexID(0),
+  m_zNegTexID(0),
+  m_xNegTexID(0),
+  m_yPosTexID(0),
   m_time(0.f),
   m_testNum(1),
   m_leftPressed(false),
@@ -25,22 +29,37 @@ WaluigiScene::WaluigiScene() : SceneviewScene(),
 }
 
 WaluigiScene::~WaluigiScene() {
-    glDeleteTextures(1, &m_textureID);
+    glDeleteTextures(1, &m_columnTexID);
 }
 
 void WaluigiScene::initScene() {
     // this is all texture stuff
-    QImage image(":/images/images/columnx3.jpg");
-    glGenTextures(1, &m_textureID);
-    glBindTexture(GL_TEXTURE_2D, m_textureID);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.bits());
+    m_columnTexID = this->genTexture(":/images/images/columnx3.jpg");
+    m_zPosTexID = this->genTexture(":/images/images/posz.jpg");
+    m_xPosTexID = this->genTexture(":/images/images/posx.jpg");
+    m_zNegTexID = this->genTexture(":/images/images/negz.jpg");
+    m_xNegTexID = this->genTexture(":/images/images/negx.jpg");
+    m_yPosTexID = this->genTexture(":/images/images/posy.jpg");
 
     // this is actual geometry stuff
     m_column = std::make_unique<Column>(30, 20);
     m_floor = std::make_unique<Cube>(1, 1, 1);
+    m_skyboxFace = std::make_unique<Square>();
     this->generateColumns(M_FIELDLENGTH, M_FIELDLENGTH, M_COLUMNMINDIST, M_COLUMNK);
+}
+
+GLuint WaluigiScene::genTexture(std::string filePath) {
+    QString path = QString::fromStdString(filePath);
+    QImage image(path);
+    GLuint id;
+
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.bits());
+
+    return id;
 }
 
 void WaluigiScene::renderGeometry() {
@@ -56,7 +75,7 @@ void WaluigiScene::renderGeometry() {
     m_phongShader->setUniform("useTexture", 1);
     m_phongShader->setUniform("repeatUV", glm::vec2(4, 8));
     m_phongShader->setUniform("repeatBottomHalf", 1); // column-specific
-    glBindTexture(GL_TEXTURE_2D, m_textureID);
+    glBindTexture(GL_TEXTURE_2D, m_columnTexID);
     // only draws the same column for now; will explore about other options
     for (ColumnNode node : m_columns) {
         glm::mat4x4 translate = glm::translate(glm::vec3(node.x, node.height / 2.0f - 2, node.z));
@@ -70,6 +89,32 @@ void WaluigiScene::renderGeometry() {
     m_phongShader->setUniform("useTexture", 0);
     m_phongShader->setUniform("m", glm::translate(glm::vec3(0, -1, 0)) * glm::scale(glm::vec3(500, 0.1, 500)));
     m_floor->draw();
+
+    // draw the skybox
+    m_phongShader->setUniform("skybox", 1);
+    m_phongShader->setUniform("useTexture", 1);
+    m_phongShader->setUniform("repeatUV", glm::vec2(1, 1));
+
+    glBindTexture(GL_TEXTURE_2D, m_zPosTexID);
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, 60, 60)) * glm::scale(glm::vec3(120, 120, 1)));
+    m_skyboxFace->draw();
+
+    glBindTexture(GL_TEXTURE_2D, m_xPosTexID);
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(60, 60, 0)) * glm::rotate(3.14159f / 2.0f, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(120, 120, 1)));
+    m_skyboxFace->draw();
+
+    glBindTexture(GL_TEXTURE_2D, m_zNegTexID);
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, 60, -60)) * glm::rotate(3.14159f, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(120, 120, 1)));
+    m_skyboxFace->draw();
+
+    glBindTexture(GL_TEXTURE_2D, m_xNegTexID);
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(-60, 60, 0)) * glm::rotate(3.14159f * 1.5f, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(120, 120, 1)));
+    m_skyboxFace->draw();
+
+    glBindTexture(GL_TEXTURE_2D, m_yPosTexID);
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, 119, 0)) * glm::rotate(3.14159f / 2.0f, glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(120, 120, 1)));
+    m_skyboxFace->draw();
+    m_phongShader->setUniform("skybox", 0);
 
     m_time += 1.f / 60.f;
     drawBalls();

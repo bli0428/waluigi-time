@@ -127,12 +127,12 @@ void Column::generateCap() {
     glm::vec3 center = glm::vec3(0, 0.5, 0);
 
     for (int i = 0; i < m_p2; i++) {
-        this->addVertex(center, glm::vec3(0, 1, 0), getUV(glm::vec3(0, 1, 0))); // draw back to center
-        this->addVertex(this->getPosition(0, i), this->getNormal(0, i), getUV(this->getPosition(0, i, true))); // draw out to circumference
-        this->addVertex(this->getPosition(0, i+1), this->getNormal(0, i+1), getUV(this->getPosition(0, i+1, true))); // draw one wedge over on circumference
+        this->addVertex(center, glm::vec3(0, 1, 0), glm::vec2(0, 0)); // draw back to center
+        this->addVertex(this->getPosition(0, i), this->getNormal(0, i), glm::vec2(0, 0)); // draw out to circumference
+        this->addVertex(this->getPosition(0, i+1), this->getNormal(0, i+1), glm::vec2(0, 0)); // draw one wedge over on circumference
     }
 
-    this->addVertex(center, glm::vec3(0, 1, 0), getUV(glm::vec3(0, 1, 0))); // draw back to center to close
+    this->addVertex(center, glm::vec3(0, 1, 0), glm::vec2(0, 0)); // draw back to center to close
 }
 
 /**
@@ -155,18 +155,26 @@ void Column::addVertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 texture) {
 
 glm::vec2 Column::getUV(glm::vec3 point) {
     float epsilon = 0.001f;
+    float theta = atan2(point.z, point.x);
 
     // top cap
     if (std::abs(point.y - 0.5) < epsilon) {
-        return glm::vec2(point.x + 0.5f, point.z + 0.5f);
+        if (theta < 0) {
+            return glm::vec2(-theta / (2.f * 3.14159f), 0);
+        } else {
+            return glm::vec2(1.f - theta / (2.f * 3.14159f), 0);
+        }
 
     // bottom cap
     } else if (std::abs(point.y + 0.5) < epsilon) {
-        return glm::vec2(point.x + 0.5f, 0.5f - point.z);
+        if (theta < 0) {
+            return glm::vec2(-theta / (2.f * 3.14159f), 1);
+        } else {
+            return glm::vec2(1.f - theta / (2.f * 3.14159f), 1);
+        }
 
     // body
     } else {
-        float theta = atan2(point.z, point.x);
         if (theta < 0) {
             return glm::vec2(-theta / (2.f * 3.14159f), 0.5f - point.y);
         } else {

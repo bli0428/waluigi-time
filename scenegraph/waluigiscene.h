@@ -5,6 +5,7 @@
 #include "column.h"
 #include "sphere.h"
 #include "Cube.h"
+#include "square.h"
 
 struct ColumnNode {
    float height;
@@ -45,6 +46,7 @@ private:
     void drawBall(Fireball *fireball);
 
     void initScene();
+    GLuint genTexture(std::string filePath);
     void generateColumns(int width, int height, float min, int k);
     int imageToGrid(glm::vec2 point, float cellSize, int cellsAcross);
     glm::vec2 randPointAround(glm::vec2 newPoint, float min);
@@ -68,11 +70,16 @@ private:
     bool m_leftPressed;
     bool m_rightPressed;
 
-    GLuint m_textureProgramID;
-    GLuint m_textureID;
+    GLuint m_columnTexID;
+    GLuint m_zPosTexID;
+    GLuint m_zNegTexID;
+    GLuint m_xPosTexID;
+    GLuint m_xNegTexID;
+    GLuint m_yPosTexID;
 
     std::unique_ptr<Column> m_column;
     std::unique_ptr<Cube> m_floor;
+    std::unique_ptr<Square> m_skyboxFace;
     std::vector<ColumnNode> m_columns;
 
 
