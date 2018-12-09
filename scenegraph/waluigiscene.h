@@ -17,6 +17,7 @@ struct Fireball {
     float time;
     glm::vec3 velocity;
     glm::vec3 position;
+    CS123SceneLightData light;
 };
 
 class WaluigiScene : public SceneviewScene
@@ -31,6 +32,7 @@ public:
     void setTrigger(int controllerNum, bool pressed);
 
     QList<Fireball*> Fireballs;
+
 
 protected:
     virtual void setLights() override;

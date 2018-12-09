@@ -147,10 +147,16 @@ glm::vec2 WaluigiScene::randPointAround(glm::vec2 newPoint, float min) {
 void WaluigiScene::setLights() {
     CS123SceneLightData light = CS123SceneLightData();
     light.type = LightType::LIGHT_POINT;
-    light.pos = glm::vec4(5.f, 10.f, 5.f, 1.f);
+    //light.pos = glm::vec4(5.f, 10.f, 5.f, 1.f);
+    light.pos = glm::vec4(10.f, 1.f, 10.f, 1.f);
     light.color = glm::vec4(1.f, 1.f, 1.f, 1.f);
-
+    light.function = glm::vec3(1.f, 0.f, 0.f);
+    light.id = 0;
     m_phongShader->setLight(light);
+
+    for (auto fireball : Fireballs) {
+        m_phongShader->setLight(fireball->light);
+    }
 }
 
 /**
@@ -197,19 +203,17 @@ void WaluigiScene::drawBalls() {
         }
     }*/
 
-//     To Dain: I refactored the code a bit- I made a struct that stores velocity, position, and time and called it Fireballs
-//     so that we only need to deal with 1 list.
-//     I also chose to use raw pointers since I felt it would be easiest to handle between classes- btw doing the time handling in tick
-//     does get rid of the lag issue.
 
-//     P.S. Please delete this message after you read it
-    for(int i = Fireballs.size() - 1; i >= 0; i--) {
+    for(int i = 0; i < Fireballs.size(); i++) {
         float t = Fireballs[i]->time;
         if(t > 10.f) {
+            Fireballs[i]->light.color = glm::vec4(0.f, 0.f, 0.f, 1.f);
+            m_phongShader->setLight(Fireballs[i]->light);
             delete Fireballs[i];
             Fireballs.removeAt(i);
         }
         else {
+            Fireballs[i]->light.id = i + 1;
             drawBall(Fireballs[i]);
         }
     }
@@ -220,6 +224,8 @@ void WaluigiScene::drawBall(Fireball *fireball) {
     glm::vec3 vel = fireball->velocity;
     glm::vec3 pos = fireball->position;
     glm::vec4 func = glm::vec4(pos.x + vel.x * time, pos.y + (vel.y * time) + (-3.f * time * time), pos.z + vel.z * time, 1.f);
+    fireball->light.pos = func;
+    //m_phongShader->setLight(fireball->light);
     m_phongShader->setUniform("m", glm::translate(func.xyz()));
     m_phongShader->applyMaterial(m_material);
     m_ball->draw();
@@ -259,7 +265,12 @@ void WaluigiScene::setTrigger(int controllerNum, bool pressed) {
         m_leftPressed = pressed;
         if(!pressed /*&& glm::length(m_leftVel) > 1.f*/) {
             glm::vec3 pos = glm::vec3(m_leftHand.matrix[3][0], m_leftHand.matrix[3][1], m_leftHand.matrix[3][2]);
-            Fireballs.append(new Fireball{0.f, m_leftVel, pos});
+            CS123SceneLightData light = CS123SceneLightData();
+            light.type = LightType::LIGHT_POINT;
+            light.pos = glm::vec4(pos, 1.f);
+            light.color = glm::vec4(0.f, 1.f, 1.f, 1.f);
+            light.function = glm::vec3(0.f, 1.f, 0.f);
+            Fireballs.append(new Fireball{0.f, m_leftVel, pos, light});
         }
     }
     else if(controllerNum == 1) {
@@ -267,7 +278,12 @@ void WaluigiScene::setTrigger(int controllerNum, bool pressed) {
         m_rightPressed = pressed;
         if(!pressed /*&& glm::length(m_rightVel) > 1.f*/) {
             glm::vec3 pos = glm::vec3(m_rightHand.matrix[3][0], m_rightHand.matrix[3][1], m_rightHand.matrix[3][2]);
-            Fireballs.append(new Fireball{0.f, m_rightVel, pos});
+            CS123SceneLightData light = CS123SceneLightData();
+            light.type = LightType::LIGHT_POINT;
+            light.pos = glm::vec4(pos, 1.f);
+            light.color = glm::vec4(0.f, 1.f, 1.f, 1.f);
+            light.function = glm::vec3(0.f, 1.f, 0.f);
+            Fireballs.append(new Fireball{0.f, m_rightVel, pos, light});
         }
     }
     else {
