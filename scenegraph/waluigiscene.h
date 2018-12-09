@@ -25,11 +25,21 @@ class WaluigiScene : public SceneviewScene
 public:
     WaluigiScene();
     virtual ~WaluigiScene() override;
+//    virtual void render(glm::mat4x4 projectionMatrix, glm::mat4x4 viewMatrix) override;
+//    virtual void render(
+//            glm::mat4x4 projectionMatrix,
+//            glm::mat4x4 viewMatrix,
+//            glm::mat4 m_mat4DevicePose [vr::k_unMaxTrackedDeviceCount],
+//            bool m_activeTrackedDevice[vr::k_unMaxTrackedDeviceCount]) override;
+
     void setLeftHand(glm::mat4x4 transform);
     void setRightHand(glm::mat4x4 transform);
     void setLeftHandVelocity(glm::vec3 velocity);
     void setRightHandVelocity(glm::vec3 velocity);
     void setTrigger(int controllerNum, bool pressed);
+
+    void setEyeHeight(uint32_t height);
+    void setEyeWidth(uint32_t width);
 
     QList<Fireball*> Fireballs;
 
@@ -55,6 +65,8 @@ private:
     PrimitiveNode m_leftHand;
     PrimitiveNode m_rightHand;
     CS123SceneMaterial m_material;
+    uint32_t m_eyeHeight;
+    uint32_t m_eyeWidth;
     bool didSetMaterial = false;
 
     std::unique_ptr<Sphere> m_ball;
