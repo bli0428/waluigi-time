@@ -4,7 +4,7 @@
 #include <iostream>
 #include "lib/ResourceLoader.h"
 #include "gl/shaders/CS123Shader.h"
-#include "shapes/Cube.h"5
+#include "shapes/Cube.h"
 using namespace CS123::GL;
 
 

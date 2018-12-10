@@ -181,6 +181,8 @@ void View::initVR() {
 
         // no file has been loaded yet, so make a WaluigiScene by default
         m_scene = std::make_unique<WaluigiScene>();
+        m_scene->setEyeHeight(m_eyeHeight);
+        m_scene->setEyeWidth(m_eyeWidth);
 }
 
 void View::resizeGL(int w, int h) {
