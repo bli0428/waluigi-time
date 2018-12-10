@@ -11,5 +11,6 @@
         <file>images/posx.jpg</file>
         <file>images/negz.jpg</file>
         <file>images/negx.jpg</file>
+        <file>images/grass.jpg</file>
     </qresource>
 </RCC>

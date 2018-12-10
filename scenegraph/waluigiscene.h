@@ -90,20 +90,21 @@ private:
     GLuint m_xPosTexID;
     GLuint m_xNegTexID;
     GLuint m_yPosTexID;
+    GLuint m_grassTexID;
 
     std::unique_ptr<Column> m_column;
-    std::unique_ptr<Cube> m_floor;
     std::unique_ptr<Square> m_skyboxFace;
     std::vector<ColumnNode> m_columns;
 
 
     // CONSTANTS
-    const int M_FIELDLENGTH = 60;
-    const float M_COLUMNMINDIST = 5.0f; // min dist between columns
+    const int M_FIELDLENGTH = 80;
+    const float M_COLUMNMINDIST = 7.0f; // min dist between columns
     const float M_COLUMNK = 30; // columns generated on each run of poisson; higher = more clustered usually
-    const float M_COLUMNHEIGHTAVG = 20.0f;
-    const float M_COLUMNHEIGHTVAR = 5.0f; // variance of columns' heights
-    const float M_COLUMNRADIUSAVG = 1.0f;
+    const float M_COLUMNHEIGHTAVG = 17.0f;
+    const float M_COLUMNHEIGHTVAR = 8.0f; // variance of columns' heights (note: they are uniformly distributed, not normally)
+    const float M_COLUMNRADIUSAVG = 1.4f;
+    const int M_SKYBOXLENGTH = 200;
 
 };
 

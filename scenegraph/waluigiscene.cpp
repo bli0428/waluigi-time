@@ -20,6 +20,7 @@ WaluigiScene::WaluigiScene() : SceneviewScene(),
   m_zNegTexID(0),
   m_xNegTexID(0),
   m_yPosTexID(0),
+  m_grassTexID(0),
   m_time(0.f),
   m_testNum(1),
   m_leftPressed(false),
@@ -30,6 +31,12 @@ WaluigiScene::WaluigiScene() : SceneviewScene(),
 
 WaluigiScene::~WaluigiScene() {
     glDeleteTextures(1, &m_columnTexID);
+    glDeleteTextures(1, &m_zPosTexID);
+    glDeleteTextures(1, &m_xPosTexID);
+    glDeleteTextures(1, &m_zNegTexID);
+    glDeleteTextures(1, &m_xNegTexID);
+    glDeleteTextures(1, &m_yPosTexID);
+    glDeleteTextures(1, &m_grassTexID);
 }
 
 void WaluigiScene::initScene() {
@@ -40,10 +47,10 @@ void WaluigiScene::initScene() {
     m_zNegTexID = this->genTexture(":/images/images/negz.jpg");
     m_xNegTexID = this->genTexture(":/images/images/negx.jpg");
     m_yPosTexID = this->genTexture(":/images/images/posy.jpg");
+    m_grassTexID = this->genTexture(":/images/images/grass.jpg");
 
     // this is actual geometry stuff
     m_column = std::make_unique<Column>(30, 20);
-    m_floor = std::make_unique<Cube>(1, 1, 1);
     m_skyboxFace = std::make_unique<Square>();
     this->generateColumns(M_FIELDLENGTH, M_FIELDLENGTH, M_COLUMNMINDIST, M_COLUMNK);
 }
@@ -131,11 +138,11 @@ void WaluigiScene::renderGeometry() {
 
     // draw the columns
     m_phongShader->setUniform("useTexture", 1);
-    m_phongShader->setUniform("repeatUV", glm::vec2(4, 8));
     m_phongShader->setUniform("repeatBottomHalf", 1); // column-specific
     glBindTexture(GL_TEXTURE_2D, m_columnTexID);
     // only draws the same column for now; will explore about other options
     for (ColumnNode node : m_columns) {
+        m_phongShader->setUniform("repeatUV", glm::vec2(std::ceil(node.radius * 4), node.height / 2));
         glm::mat4x4 translate = glm::translate(glm::vec3(node.x, node.height / 2.0f - 2, node.z));
         glm::mat4x4 scale = glm::scale(glm::vec3(node.radius * 2, node.height, node.radius * 2));
         m_phongShader->setUniform("m", translate * scale);
@@ -144,33 +151,35 @@ void WaluigiScene::renderGeometry() {
     m_phongShader->setUniform("repeatBottomHalf", 0); // unset the hack so other textures don't get weird
 
     // draw the floor
-    m_phongShader->setUniform("useTexture", 0);
-    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, -1, 0)) * glm::scale(glm::vec3(500, 0.1, 500)));
-    m_floor->draw();
+    glBindTexture(GL_TEXTURE_2D, m_grassTexID);
+    material.cAmbient = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+    m_phongShader->applyMaterial(material);
+    m_phongShader->setUniform("repeatUV", glm::vec2(60, 60));
+    m_phongShader->setUniform("m", glm::rotate(3.14159f * 1.5f, glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(300, 300, 1)));
+    m_skyboxFace->draw();
 
     // draw the skybox
     m_phongShader->setUniform("skybox", 1);
-    m_phongShader->setUniform("useTexture", 1);
     m_phongShader->setUniform("repeatUV", glm::vec2(1, 1));
 
     glBindTexture(GL_TEXTURE_2D, m_zPosTexID);
-    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, 60, 60)) * glm::scale(glm::vec3(120, 120, 1)));
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, M_SKYBOXLENGTH / 2, M_SKYBOXLENGTH / 2)) * glm::scale(glm::vec3(M_SKYBOXLENGTH, M_SKYBOXLENGTH, 1)));
     m_skyboxFace->draw();
 
     glBindTexture(GL_TEXTURE_2D, m_xPosTexID);
-    m_phongShader->setUniform("m", glm::translate(glm::vec3(60, 60, 0)) * glm::rotate(3.14159f / 2.0f, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(120, 120, 1)));
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(M_SKYBOXLENGTH / 2, M_SKYBOXLENGTH / 2, 0)) * glm::rotate(3.14159f / 2.0f, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(M_SKYBOXLENGTH, M_SKYBOXLENGTH, 1)));
     m_skyboxFace->draw();
 
     glBindTexture(GL_TEXTURE_2D, m_zNegTexID);
-    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, 60, -60)) * glm::rotate(3.14159f, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(120, 120, 1)));
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, M_SKYBOXLENGTH / 2, -M_SKYBOXLENGTH / 2)) * glm::rotate(3.14159f, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(M_SKYBOXLENGTH, M_SKYBOXLENGTH, 1)));
     m_skyboxFace->draw();
 
     glBindTexture(GL_TEXTURE_2D, m_xNegTexID);
-    m_phongShader->setUniform("m", glm::translate(glm::vec3(-60, 60, 0)) * glm::rotate(3.14159f * 1.5f, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(120, 120, 1)));
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(-M_SKYBOXLENGTH / 2, M_SKYBOXLENGTH / 2, 0)) * glm::rotate(3.14159f * 1.5f, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(M_SKYBOXLENGTH, M_SKYBOXLENGTH, 1)));
     m_skyboxFace->draw();
 
     glBindTexture(GL_TEXTURE_2D, m_yPosTexID);
-    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, 119, 0)) * glm::rotate(3.14159f / 2.0f, glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(120, 120, 1)));
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, M_SKYBOXLENGTH - 2, 0)) * glm::rotate(3.14159f / 2.0f, glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(M_SKYBOXLENGTH, M_SKYBOXLENGTH, 1)));
     m_skyboxFace->draw();
     m_phongShader->setUniform("skybox", 0);
 
