@@ -19,9 +19,13 @@ WaluigiScene::WaluigiScene() : SceneviewScene(),
   m_time(0.f),
   m_testNum(1),
   m_leftPressed(false),
-  m_rightPressed(false)
+  m_rightPressed(false),
+  m_gBuffer(nullptr),
+  m_gProgram(0),
+  m_lightProgram(0)
 {
     // TODO Refactor this setup later lol
+
     m_column = std::make_unique<Column>(30, 20);
     m_floor = std::make_unique<Cube>(1, 1, 1);
     this->generateColumns(M_FIELDLENGTH, M_FIELDLENGTH, M_COLUMNMINDIST, M_COLUMNK);
@@ -31,14 +35,25 @@ WaluigiScene::~WaluigiScene() {
 
 }
 
+void WaluigiScene::loadShaders() {
+    m_gProgram = ResourceLoader::createShaderProgram(
+                ":/shaders/gbuffer.vert", ":/shaders/gbuffer.frag");
+    m_lightProgram = ResourceLoader::createShaderProgram(
+                ":/shaders/quad.vert", ":/shaders/lightingpass.frag");
+}
 
 void WaluigiScene::render(glm::mat4x4 projectionMatrix, glm::mat4x4 viewMatrix) {
-    m_phongShader->bind();
-    setSceneUniforms(projectionMatrix, viewMatrix);
-    setLights();
+
+    //Need different light types- ambient, point, directional- iterate over all lights and render quad for each
+    setClearColor();
+    m_gBuffer->bind();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //m_phongShader->bind();
+    //setSceneUniforms(projectionMatrix, viewMatrix);
+    //setLights(); not setting uniforms for lights anymjore
     renderGeometry();
     glBindTexture(GL_TEXTURE_2D, 0);
-    m_phongShader->unbind();
+    //m_phongShader->unbind();
 }
 
 void WaluigiScene::render(
@@ -47,48 +62,8 @@ void WaluigiScene::render(
     glm::mat4 m_mat4DevicePose[vr::k_unMaxTrackedDeviceCount],
     bool m_activeTrackedDevice[vr::k_unMaxTrackedDeviceCount]) {
 
+    //Need different light types- ambient, point, directional- iterate over all lights and render quad for each
     setClearColor();
-    unsigned int gBuffer;
-    glGenBuffers(1, &gBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    unsigned int gPosition, gNormal, gAlbedoSpec;
-
-    glGenTextures(1, &gPosition);
-    glBindTexture(GL_TEXTURE_2D, gPosition);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_eyeWidth, m_eyeHeight, 0, GL_RGB, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
-
-    glGenTextures(1, &gNormal);
-    glBindTexture(GL_TEXTURE_2D, gNormal);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_eyeWidth, m_eyeHeight, 0, GL_RGB, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
-
-    glGenTextures(1, &gAlbedoSpec);
-    glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_eyeWidth, m_eyeHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
-
-    unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-    glDrawBuffers(3, attachments);
-
-
-    // Lighting pass
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, gPosition);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, gNormal);
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
-    // also send light relevant uniforms
-
     m_phongShader->bind();
     setLights();
     renderGeometry();
@@ -198,6 +173,18 @@ void WaluigiScene::generateColumns(int width, int height, float min, int k) {
         float r = static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f;
         m_columns.push_back(ColumnNode{M_COLUMNHEIGHTAVG + r * M_COLUMNHEIGHTVAR, M_COLUMNRADIUSAVG, point.x - M_FIELDLENGTH / 2, point.y - M_FIELDLENGTH / 2});
     }
+}
+
+void WaluigiScene::resize(int w, int h) {
+    m_gBuffer = std::make_unique<CS123::GL::FBO>(
+                3,
+                FBO::DEPTH_STENCIL_ATTACHMENT::DEPTH_ONLY,
+                w,
+                h,
+                TextureParameters::WRAP_METHOD::CLAMP_TO_EDGE,
+                TextureParameters::FILTER_METHOD::NEAREST,
+                GL_FLOAT);
+
 }
 
 int WaluigiScene::imageToGrid(glm::vec2 point, float cellSize, int cellsAcross) {

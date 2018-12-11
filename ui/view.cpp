@@ -187,6 +187,7 @@ void View::initVR() {
 
 void View::resizeGL(int w, int h) {
     glViewport(0, 0, w, h);
+    m_scene->resize(w, h);
 }
 
 void View::paintGL() {

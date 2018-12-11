@@ -5,6 +5,7 @@
 #include "column.h"
 #include "sphere.h"
 #include "Cube.h"
+#include "gl/datatype/FBO.h"
 
 struct ColumnNode {
    float height;
@@ -25,12 +26,12 @@ class WaluigiScene : public SceneviewScene
 public:
     WaluigiScene();
     virtual ~WaluigiScene() override;
-//    virtual void render(glm::mat4x4 projectionMatrix, glm::mat4x4 viewMatrix) override;
-//    virtual void render(
-//            glm::mat4x4 projectionMatrix,
-//            glm::mat4x4 viewMatrix,
-//            glm::mat4 m_mat4DevicePose [vr::k_unMaxTrackedDeviceCount],
-//            bool m_activeTrackedDevice[vr::k_unMaxTrackedDeviceCount]) override;
+    virtual void render(glm::mat4x4 projectionMatrix, glm::mat4x4 viewMatrix) override;
+    virtual void render(
+            glm::mat4x4 projectionMatrix,
+            glm::mat4x4 viewMatrix,
+            glm::mat4 m_mat4DevicePose [vr::k_unMaxTrackedDeviceCount],
+            bool m_activeTrackedDevice[vr::k_unMaxTrackedDeviceCount]) override;
 
     void setLeftHand(glm::mat4x4 transform);
     void setRightHand(glm::mat4x4 transform);
@@ -41,10 +42,13 @@ public:
     void setEyeHeight(uint32_t height);
     void setEyeWidth(uint32_t width);
 
+    void resize(int w, int h);
+
     QList<Fireball*> Fireballs;
 
 
 protected:
+    void loadShaders();
     virtual void setLights() override;
     virtual void renderGeometry() override;
 
@@ -87,6 +91,10 @@ private:
     std::unique_ptr<Column> m_column;
     std::unique_ptr<Cube> m_floor;
     std::vector<ColumnNode> m_columns;
+
+    std::unique_ptr<CS123::GL::FBO> m_gBuffer;
+    GLuint m_gProgram;
+    GLuint m_lightProgram;
 
 
     // CONSTANTS
