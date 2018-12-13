@@ -225,7 +225,7 @@ void View::paintGL() {
            m_scene->render(m_camera.getProjectionMatrix(), m_camera.getViewMatrix());
        } else {
            m_scene = std::make_unique<WaluigiScene>();
-           m_camera.orientLook(glm::vec4(-3, 1, -3, 0), glm::vec4(1, 0, 1, 0), glm::vec4(0, 1, 0, 0));
+           m_camera.orientLook(glm::vec4(0, 1, 0, 0), glm::vec4(1, 4, 1, 0), glm::vec4(0, 1, 0, 0));
        }
    }
 }
@@ -403,6 +403,7 @@ void View::tick() {
     if (m_scene) {
         for (Fireball *fireball : m_scene->Fireballs) {
             fireball->time += 1.f/60.f;
+            fireball->spawnTime += 1.f/60.f;
         }
     }
 

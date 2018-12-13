@@ -14,21 +14,59 @@
  * the geometry/lights are done.
  */
 WaluigiScene::WaluigiScene() : SceneviewScene(),
-  m_textureProgramID(0),
-  m_textureID(0),
+  m_columnTexID(0),
+  m_zPosTexID(0),
+  m_xPosTexID(0),
+  m_zNegTexID(0),
+  m_xNegTexID(0),
+  m_yPosTexID(0),
+  m_grassTexID(0),
   m_time(0.f),
   m_testNum(1),
   m_leftPressed(false),
   m_rightPressed(false)
 {
-    // TODO Refactor this setup later lol
-    m_column = std::make_unique<Column>(30, 20);
-    m_floor = std::make_unique<Cube>(1, 1, 1);
-    this->generateColumns(M_FIELDLENGTH, M_FIELDLENGTH, M_COLUMNMINDIST, M_COLUMNK);
+    this->initScene();
 }
 
 WaluigiScene::~WaluigiScene() {
+    glDeleteTextures(1, &m_columnTexID);
+    glDeleteTextures(1, &m_zPosTexID);
+    glDeleteTextures(1, &m_xPosTexID);
+    glDeleteTextures(1, &m_zNegTexID);
+    glDeleteTextures(1, &m_xNegTexID);
+    glDeleteTextures(1, &m_yPosTexID);
+    glDeleteTextures(1, &m_grassTexID);
+}
 
+void WaluigiScene::initScene() {
+    // this is all texture stuff
+    m_columnTexID = this->genTexture(":/images/images/columnx3.jpg");
+    m_zPosTexID = this->genTexture(":/images/images/posz.jpg");
+    m_xPosTexID = this->genTexture(":/images/images/posx.jpg");
+    m_zNegTexID = this->genTexture(":/images/images/negz.jpg");
+    m_xNegTexID = this->genTexture(":/images/images/negx.jpg");
+    m_yPosTexID = this->genTexture(":/images/images/posy.jpg");
+    m_grassTexID = this->genTexture(":/images/images/grass.jpg");
+
+    // this is actual geometry stuff
+    m_column = std::make_unique<Column>(30, 20);
+    m_skyboxFace = std::make_unique<Square>();
+    this->generateColumns(M_FIELDLENGTH, M_FIELDLENGTH, M_COLUMNMINDIST, M_COLUMNK);
+}
+
+GLuint WaluigiScene::genTexture(std::string filePath) {
+    QString path = QString::fromStdString(filePath);
+    QImage image(path);
+    GLuint id;
+
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.bits());
+
+    return id;
 }
 
 
@@ -90,22 +128,60 @@ WaluigiScene::~WaluigiScene() {
 
 
 void WaluigiScene::renderGeometry() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     m_phongShader->setUniform("m", glm::scale(glm::vec3(1, 5, 1)));
     CS123SceneMaterial material = CS123SceneMaterial();
-    material.cDiffuse = glm::vec4(0.5f, 0.2f, 0.2f, 0.f);
-    material.cAmbient = glm::vec4(0.2f, 0.f, 0.2f, 0.f);
+    material.cDiffuse = glm::vec4(0.9f, 0.9f, 0.9f, 1.0f);
+    material.cAmbient = glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
     m_phongShader->applyMaterial(material);
 
+    // draw the columns
+    m_phongShader->setUniform("useTexture", 1);
+    m_phongShader->setUniform("repeatBottomHalf", 1); // column-specific
+    glBindTexture(GL_TEXTURE_2D, m_columnTexID);
     // only draws the same column for now; will explore about other options
     for (ColumnNode node : m_columns) {
+        m_phongShader->setUniform("repeatUV", glm::vec2(std::ceil(node.radius * 4), node.height / 2));
         glm::mat4x4 translate = glm::translate(glm::vec3(node.x, node.height / 2.0f - 2, node.z));
         glm::mat4x4 scale = glm::scale(glm::vec3(node.radius * 2, node.height, node.radius * 2));
         m_phongShader->setUniform("m", translate * scale);
         m_column->draw();
     }
+    m_phongShader->setUniform("repeatBottomHalf", 0); // unset the hack so other textures don't get weird
 
-    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, -1, 0)) * glm::scale(glm::vec3(500, 0.1, 500)));
-    m_floor->draw();
+    // draw the floor
+    glBindTexture(GL_TEXTURE_2D, m_grassTexID);
+    material.cAmbient = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+    m_phongShader->applyMaterial(material);
+    m_phongShader->setUniform("repeatUV", glm::vec2(60, 60));
+    m_phongShader->setUniform("m", glm::rotate(3.14159f * 1.5f, glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(300, 300, 1)));
+    m_skyboxFace->draw();
+
+    // draw the skybox
+    m_phongShader->setUniform("skybox", 1);
+    m_phongShader->setUniform("repeatUV", glm::vec2(1, 1));
+
+    glBindTexture(GL_TEXTURE_2D, m_zPosTexID);
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, M_SKYBOXLENGTH / 2, M_SKYBOXLENGTH / 2)) * glm::scale(glm::vec3(M_SKYBOXLENGTH, M_SKYBOXLENGTH, 1)));
+    m_skyboxFace->draw();
+
+    glBindTexture(GL_TEXTURE_2D, m_xPosTexID);
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(M_SKYBOXLENGTH / 2, M_SKYBOXLENGTH / 2, 0)) * glm::rotate(3.14159f / 2.0f, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(M_SKYBOXLENGTH, M_SKYBOXLENGTH, 1)));
+    m_skyboxFace->draw();
+
+    glBindTexture(GL_TEXTURE_2D, m_zNegTexID);
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, M_SKYBOXLENGTH / 2, -M_SKYBOXLENGTH / 2)) * glm::rotate(3.14159f, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(M_SKYBOXLENGTH, M_SKYBOXLENGTH, 1)));
+    m_skyboxFace->draw();
+
+    glBindTexture(GL_TEXTURE_2D, m_xNegTexID);
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(-M_SKYBOXLENGTH / 2, M_SKYBOXLENGTH / 2, 0)) * glm::rotate(3.14159f * 1.5f, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(M_SKYBOXLENGTH, M_SKYBOXLENGTH, 1)));
+    m_skyboxFace->draw();
+
+    glBindTexture(GL_TEXTURE_2D, m_yPosTexID);
+    m_phongShader->setUniform("m", glm::translate(glm::vec3(0, M_SKYBOXLENGTH - 2, 0)) * glm::rotate(3.14159f / 2.0f, glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(M_SKYBOXLENGTH, M_SKYBOXLENGTH, 1)));
+    m_skyboxFace->draw();
+    m_phongShader->setUniform("skybox", 0);
 
     m_time += 1.f / 60.f;
     drawBalls();
@@ -224,7 +300,7 @@ void WaluigiScene::setLights() {
  */
 void WaluigiScene::drawHands() {
     if (!didSetMaterial) {
-        m_ball = std::make_unique<Sphere>(20, 20, 20, 0.1f);
+        m_ball = std::make_unique<Sphere>(20, 20, 20, M_FIREBALLRADIUS);
         m_handShape = std::make_unique<Sphere>(4, 4, 4, 0.1f);
         //m_testSphere = std::make_unique<Sphere>(20, 20, 20, 0.1f);
 
@@ -250,20 +326,8 @@ void WaluigiScene::drawHands() {
 }
 
 void WaluigiScene::drawBalls() {
-    /*QMutableListIterator<float> i(m_ballTimes);
-    while(i.hasNext()) {
-        float t = i.next();
-        if(t > 10.f) {
-            i.remove();
-        }
-        else {
-
-        }
-    }*/
-
-
     for(int i = 0; i < Fireballs.size(); i++) {
-        float t = Fireballs[i]->time;
+        float t = Fireballs[i]->spawnTime;
         if(t > 10.f) {
             Fireballs[i]->light.color = glm::vec4(0.f, 0.f, 0.f, 1.f);
             m_phongShader->setLight(Fireballs[i]->light);
@@ -278,15 +342,47 @@ void WaluigiScene::drawBalls() {
 }
 
 void WaluigiScene::drawBall(Fireball *fireball) {
+
     float time = fireball->time;
     glm::vec3 vel = fireball->velocity;
     glm::vec3 pos = fireball->position;
-    glm::vec4 func = glm::vec4(pos.x + vel.x * time, pos.y + (vel.y * time) + (-3.f * time * time), pos.z + vel.z * time, 1.f);
-    fireball->light.pos = func;
+    glm::vec4 func = glm::vec4(pos.x + vel.x * time, pos.y + (vel.y * time) + (.5f * M_GRAV * time * time), pos.z + vel.z * time, 1.f);
+
+    if(checkForCollision(fireball, func)) {
+        fireball->light.pos = glm::vec4(fireball->position, 1.f);
+    }
+    else {
+        fireball->light.pos = func;
+    }
     //m_phongShader->setLight(fireball->light);
     m_phongShader->setUniform("m", glm::translate(func.xyz()));
     m_phongShader->applyMaterial(m_material);
+    fireball->prevTime = fireball->time;
     m_ball->draw();
+}
+
+bool WaluigiScene::checkForCollision(Fireball *fireball, glm::vec4 newPos) {
+    if(newPos.y <= .1f) {
+        float time = fireball->time;
+        glm::vec3 vel = fireball->velocity;
+        glm::vec3 pos = fireball->position;
+        float prevTime = fireball->prevTime;
+
+        fireball->position = glm::vec3(pos.x + vel.x * prevTime, pos.y + (vel.y * prevTime) + (.5f * M_GRAV * prevTime * prevTime), pos.z + vel.z * prevTime);
+        newPos = glm::vec4(fireball->position, 1.f);
+        fireball->velocity = glm::vec3(vel.x, .75f * -(vel.y + (M_GRAV * time)) , vel.z);
+        fireball->time = 0.f;
+        return true;
+    }
+    //loop through each cylinder and check for collisions
+    for(int i = 0; i < m_columns.size(); i++) {
+        ColumnNode c = m_columns[i];
+        if(glm::distance(glm::vec2(c.x, c.z), glm::vec2(newPos.x, newPos.z)) < c.radius + M_FIREBALLRADIUS) {
+            m_columns.erase(m_columns.begin() + i);
+
+            break;
+        }
+    }
 }
 
 void WaluigiScene::updateControllerMaterial(PrimitiveNode hand) {
@@ -328,7 +424,8 @@ void WaluigiScene::setTrigger(int controllerNum, bool pressed) {
             light.pos = glm::vec4(pos, 1.f);
             light.color = glm::vec4(0.f, 1.f, 1.f, 1.f);
             light.function = glm::vec3(0.f, 1.f, 0.f);
-            Fireballs.append(new Fireball{0.f, m_leftVel, pos, light});
+            Fireballs.append(new Fireball{0.f, 0.f, 0.f, m_leftVel, pos, light});
+            std::cout << m_leftVel.y << std::endl;
         }
     }
     else if(controllerNum == 1) {
@@ -341,7 +438,8 @@ void WaluigiScene::setTrigger(int controllerNum, bool pressed) {
             light.pos = glm::vec4(pos, 1.f);
             light.color = glm::vec4(0.f, 1.f, 1.f, 1.f);
             light.function = glm::vec3(0.f, 1.f, 0.f);
-            Fireballs.append(new Fireball{0.f, m_rightVel, pos, light});
+            Fireballs.append(new Fireball{0.f, 0.f, 0.f, m_rightVel, pos, light});
+            std::cout << m_rightVel.y << std::endl;
         }
     }
     else {

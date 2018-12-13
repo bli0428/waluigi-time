@@ -31,7 +31,7 @@ void Column::generateOffsets() {
     }
 }
 
-glm::vec3 Column::getPosition(int level, int wedge) {
+glm::vec3 Column::getPosition(int level, int wedge, bool raw = false) {
     // wrap around
     if (level > m_p1) {
         level = 0;
@@ -50,8 +50,12 @@ glm::vec3 Column::getPosition(int level, int wedge) {
     pos.x = glm::cos(theta) * 0.5;
     pos.z = glm::sin(theta) * 0.5;
 
+    if (raw) {
+        return pos;
+    }
+
     glm::vec2 offset = m_offsets[level * m_p2 + wedge];
-    offset.y /= m_p1 * 2;
+    offset.y /= m_p1 * 2 * M_SMOOTHNESS;
     offset.x = (offset.x * 2 - 1) / M_SMOOTHNESS;
 
     glm::vec3 projected = glm::vec3(pos.x, 0.0f, pos.z);
@@ -138,8 +142,8 @@ void Column::generateCap() {
 void Column::generateRing(int floor) {
     // push to m_coordinates, along with their normals
     for (int i = 0; i <= m_p2; i++) {
-        this->addVertex(this->getPosition(floor, i), this->getNormal(floor, i), glm::vec2(0, 0)); // draw on this floor
-        this->addVertex(this->getPosition(floor + 1, i), this->getNormal(floor + 1, i), glm::vec2(0, 0)); // draw one floor down
+        this->addVertex(this->getPosition(floor, i), this->getNormal(floor, i), getUV(this->getPosition(floor, i, true))); // draw on this floor
+        this->addVertex(this->getPosition(floor + 1, i), this->getNormal(floor + 1, i), getUV(this->getPosition(floor + 1, i, true))); // draw one floor down
     }
 }
 
@@ -151,18 +155,26 @@ void Column::addVertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 texture) {
 
 glm::vec2 Column::getUV(glm::vec3 point) {
     float epsilon = 0.001f;
+    float theta = atan2(point.z, point.x);
 
     // top cap
     if (std::abs(point.y - 0.5) < epsilon) {
-        return glm::vec2(point.x + 0.5f, point.z + 0.5f);
+        if (theta < 0) {
+            return glm::vec2(-theta / (2.f * 3.14159f), 0);
+        } else {
+            return glm::vec2(1.f - theta / (2.f * 3.14159f), 0);
+        }
 
     // bottom cap
     } else if (std::abs(point.y + 0.5) < epsilon) {
-        return glm::vec2(point.x + 0.5f, 0.5f - point.z);
+        if (theta < 0) {
+            return glm::vec2(-theta / (2.f * 3.14159f), 1);
+        } else {
+            return glm::vec2(1.f - theta / (2.f * 3.14159f), 1);
+        }
 
     // body
     } else {
-        float theta = atan2(point.z, point.x);
         if (theta < 0) {
             return glm::vec2(-theta / (2.f * 3.14159f), 0.5f - point.y);
         } else {

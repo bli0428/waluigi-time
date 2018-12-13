@@ -36,6 +36,7 @@ INPUT(
 ./release\trianglestripdrawer.o
 ./release\column.o
 ./release\waluigiscene.o
+./release\square.o
 ./release\qrc_resources.o
 ./release\moc_view.o
 ./release\moc_mainwindow.o

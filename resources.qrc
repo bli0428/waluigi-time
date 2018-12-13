@@ -4,4 +4,13 @@
         <file alias="shader.vert">shaders/shader.vert</file>
         <file>gbuffer.frag</file>
     </qresource>
+    <qresource prefix="/images">
+        <file>images/columnx3.jpg</file>
+        <file>images/posz.jpg</file>
+        <file>images/posy.jpg</file>
+        <file>images/posx.jpg</file>
+        <file>images/negz.jpg</file>
+        <file>images/negx.jpg</file>
+        <file>images/grass.jpg</file>
+    </qresource>
 </RCC>

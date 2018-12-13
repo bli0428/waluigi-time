@@ -5,6 +5,7 @@
 #include "column.h"
 #include "sphere.h"
 #include "Cube.h"
+#include "square.h"
 
 struct ColumnNode {
    float height;
@@ -15,6 +16,8 @@ struct ColumnNode {
 
 struct Fireball {
     float time;
+    float prevTime;
+    float spawnTime;
     glm::vec3 velocity;
     glm::vec3 position;
     CS123SceneLightData light;
@@ -55,7 +58,10 @@ private:
     void drawHand(PrimitiveNode hand);
     void drawBalls();
     void drawBall(Fireball *fireball);
+    bool checkForCollision(Fireball *fireball, glm::vec4 newPos);
 
+    void initScene();
+    GLuint genTexture(std::string filePath);
     void generateColumns(int width, int height, float min, int k);
     int imageToGrid(glm::vec2 point, float cellSize, int cellsAcross);
     glm::vec2 randPointAround(glm::vec2 newPoint, float min);
@@ -81,21 +87,30 @@ private:
     bool m_leftPressed;
     bool m_rightPressed;
 
-    GLuint m_textureProgramID;
-    GLuint m_textureID;
+    GLuint m_columnTexID;
+    GLuint m_zPosTexID;
+    GLuint m_zNegTexID;
+    GLuint m_xPosTexID;
+    GLuint m_xNegTexID;
+    GLuint m_yPosTexID;
+    GLuint m_grassTexID;
 
     std::unique_ptr<Column> m_column;
-    std::unique_ptr<Cube> m_floor;
+    std::unique_ptr<Square> m_skyboxFace;
     std::vector<ColumnNode> m_columns;
 
 
     // CONSTANTS
-    const int M_FIELDLENGTH = 60;
-    const float M_COLUMNMINDIST = 5.0f; // min dist between columns
+    const int M_FIELDLENGTH = 80;
+    const float M_COLUMNMINDIST = 7.0f; // min dist between columns
     const float M_COLUMNK = 30; // columns generated on each run of poisson; higher = more clustered usually
-    const float M_COLUMNHEIGHTAVG = 25.0f;
-    const float M_COLUMNHEIGHTVAR = 5.0f; // variance of columns' heights
-    const float M_COLUMNRADIUSAVG = 1.0f;
+    const float M_COLUMNHEIGHTAVG = 17.0f;
+    const float M_COLUMNHEIGHTVAR = 8.0f; // variance of columns' heights (note: they are uniformly distributed, not normally)
+    const float M_COLUMNRADIUSAVG = 1.4f;
+    const int M_SKYBOXLENGTH = 200;
+
+    const float M_GRAV = -6.f;
+    const float M_FIREBALLRADIUS = .1f;
 
 };
 
