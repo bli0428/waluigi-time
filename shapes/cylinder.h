@@ -21,6 +21,7 @@ private:
     void generateVertices();
     void generateCap(float y, bool reverse);
     void generateRing(float upperY, float lowerY);
+    glm::vec2 getUV(glm::vec3 point);
 
     TriangleStripDrawer m_stripDrawer;
     SquareRingDrawer m_ringDrawer;

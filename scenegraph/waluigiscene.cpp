@@ -34,6 +34,8 @@ WaluigiScene::~WaluigiScene() {
 }
 
 void WaluigiScene::initScene() {
+    srand(m_time);
+
     // this is all texture stuff
     m_columnTexID = this->genTexture(":/images/images/columnx3.jpg");
     m_skyTexID = this->genTexture(":/images/images/sky.png");
@@ -195,7 +197,6 @@ void WaluigiScene::generateColumns(int width, int height, float min, int k) {
     std::vector<glm::vec2> samplePoints;
     std::vector<glm::vec2> processList;
 
-    srand(m_time);
     glm::vec2 firstPoint = glm::vec2(static_cast<float>(rand()) / RAND_MAX * width,
             static_cast<float>(rand()) / RAND_MAX * height);
     samplePoints.push_back(firstPoint);

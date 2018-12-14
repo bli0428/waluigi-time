@@ -48,7 +48,7 @@ void Cylinder::generateCap(float y, bool reverse) {
     for (glm::vec3 coord : coords) {
         OpenGLShape::pushCoord(coord);
         OpenGLShape::pushCoord(glm::vec3(0, 2*y, 0));
-        OpenGLShape::pushCoord(glm::vec2(0, 0));
+        OpenGLShape::pushCoord(getUV(coord));
     }
 }
 
@@ -65,6 +65,36 @@ void Cylinder::generateRing(float upperY, float lowerY) {
     for (glm::vec3 coord : coords) {
         OpenGLShape::pushCoord(coord);
         OpenGLShape::pushCoord(glm::vec3(coord.x * 2.f, 0, coord.z * 2.f));
-        OpenGLShape::pushCoord(glm::vec2(0, 0));
+        OpenGLShape::pushCoord(getUV(coord));
+    }
+}
+
+glm::vec2 Cylinder::getUV(glm::vec3 point) {
+    float epsilon = 0.001f;
+    float theta = atan2(point.z, point.x);
+
+    // top cap
+    if (std::abs(point.y - 0.5) < epsilon) {
+        if (theta < 0) {
+            return glm::vec2(-theta / (2.f * 3.14159f), 0);
+        } else {
+            return glm::vec2(1.f - theta / (2.f * 3.14159f), 0);
+        }
+
+    // bottom cap
+    } else if (std::abs(point.y + 0.5) < epsilon) {
+        if (theta < 0) {
+            return glm::vec2(-theta / (2.f * 3.14159f), 1);
+        } else {
+            return glm::vec2(1.f - theta / (2.f * 3.14159f), 1);
+        }
+
+    // body
+    } else {
+        if (theta < 0) {
+            return glm::vec2(-theta / (2.f * 3.14159f), 0.5f - point.y);
+        } else {
+            return glm::vec2(1.f - theta / (2.f * 3.14159f), 0.5f - point.y);
+        }
     }
 }
