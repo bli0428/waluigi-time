@@ -141,10 +141,18 @@ void Column::generateCap() {
  */
 void Column::generateRing(int floor) {
     // push to m_coordinates, along with their normals
-    for (int i = 0; i <= m_p2; i++) {
+    for (int i = 0; i < m_p2; i++) {
         this->addVertex(this->getPosition(floor, i), this->getNormal(floor, i), getUV(this->getPosition(floor, i, true))); // draw on this floor
         this->addVertex(this->getPosition(floor + 1, i), this->getNormal(floor + 1, i), getUV(this->getPosition(floor + 1, i, true))); // draw one floor down
     }
+
+    glm::vec2 upUV = getUV(this->getPosition(floor, 0, true));
+    glm::vec2 downUV = getUV(this->getPosition(floor + 1, 0, true));
+    upUV.x = 0;
+    downUV.x = 0;
+
+    this->addVertex(this->getPosition(floor, 0), this->getNormal(floor, 0), upUV);
+    this->addVertex(this->getPosition(floor + 1, 0), this->getNormal(floor + 1, 0), downUV);
 }
 
 void Column::addVertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 texture) {

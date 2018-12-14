@@ -88,11 +88,8 @@ private:
     bool m_rightPressed;
 
     GLuint m_columnTexID;
-    GLuint m_zPosTexID;
-    GLuint m_zNegTexID;
-    GLuint m_xPosTexID;
-    GLuint m_xNegTexID;
-    GLuint m_yPosTexID;
+    GLuint m_sideTexID;
+    GLuint m_skyTexID;
     GLuint m_grassTexID;
 
     std::unique_ptr<Column> m_column;

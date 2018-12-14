@@ -15,11 +15,8 @@
  */
 WaluigiScene::WaluigiScene() : SceneviewScene(),
   m_columnTexID(0),
-  m_zPosTexID(0),
-  m_xPosTexID(0),
-  m_zNegTexID(0),
-  m_xNegTexID(0),
-  m_yPosTexID(0),
+  m_sideTexID(0),
+  m_skyTexID(0),
   m_grassTexID(0),
   m_time(0.f),
   m_testNum(1),
@@ -31,22 +28,16 @@ WaluigiScene::WaluigiScene() : SceneviewScene(),
 
 WaluigiScene::~WaluigiScene() {
     glDeleteTextures(1, &m_columnTexID);
-    glDeleteTextures(1, &m_zPosTexID);
-    glDeleteTextures(1, &m_xPosTexID);
-    glDeleteTextures(1, &m_zNegTexID);
-    glDeleteTextures(1, &m_xNegTexID);
-    glDeleteTextures(1, &m_yPosTexID);
+    glDeleteTextures(1, &m_sideTexID);
+    glDeleteTextures(1, &m_skyTexID);
     glDeleteTextures(1, &m_grassTexID);
 }
 
 void WaluigiScene::initScene() {
     // this is all texture stuff
     m_columnTexID = this->genTexture(":/images/images/columnx3.jpg");
-    m_zPosTexID = this->genTexture(":/images/images/posz.jpg");
-    m_xPosTexID = this->genTexture(":/images/images/posx.jpg");
-    m_zNegTexID = this->genTexture(":/images/images/negz.jpg");
-    m_xNegTexID = this->genTexture(":/images/images/negx.jpg");
-    m_yPosTexID = this->genTexture(":/images/images/posy.jpg");
+    m_skyTexID = this->genTexture(":/images/images/sky.png");
+    m_sideTexID = this->genTexture(":/images/images/sides.png");
     m_grassTexID = this->genTexture(":/images/images/grass.jpg");
 
     // this is actual geometry stuff
@@ -62,8 +53,8 @@ GLuint WaluigiScene::genTexture(std::string filePath) {
 
     glGenTextures(1, &id);
     glBindTexture(GL_TEXTURE_2D, id);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, image.bits());
 
     return id;
@@ -162,23 +153,20 @@ void WaluigiScene::renderGeometry() {
     m_phongShader->setUniform("skybox", 1);
     m_phongShader->setUniform("repeatUV", glm::vec2(1, 1));
 
-    glBindTexture(GL_TEXTURE_2D, m_zPosTexID);
+    glBindTexture(GL_TEXTURE_2D, m_sideTexID);
     m_phongShader->setUniform("m", glm::translate(glm::vec3(0, M_SKYBOXLENGTH / 2, M_SKYBOXLENGTH / 2)) * glm::scale(glm::vec3(M_SKYBOXLENGTH, M_SKYBOXLENGTH, 1)));
     m_skyboxFace->draw();
 
-    glBindTexture(GL_TEXTURE_2D, m_xPosTexID);
     m_phongShader->setUniform("m", glm::translate(glm::vec3(M_SKYBOXLENGTH / 2, M_SKYBOXLENGTH / 2, 0)) * glm::rotate(3.14159f / 2.0f, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(M_SKYBOXLENGTH, M_SKYBOXLENGTH, 1)));
     m_skyboxFace->draw();
 
-    glBindTexture(GL_TEXTURE_2D, m_zNegTexID);
     m_phongShader->setUniform("m", glm::translate(glm::vec3(0, M_SKYBOXLENGTH / 2, -M_SKYBOXLENGTH / 2)) * glm::rotate(3.14159f, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(M_SKYBOXLENGTH, M_SKYBOXLENGTH, 1)));
     m_skyboxFace->draw();
 
-    glBindTexture(GL_TEXTURE_2D, m_xNegTexID);
     m_phongShader->setUniform("m", glm::translate(glm::vec3(-M_SKYBOXLENGTH / 2, M_SKYBOXLENGTH / 2, 0)) * glm::rotate(3.14159f * 1.5f, glm::vec3(0, 1, 0)) * glm::scale(glm::vec3(M_SKYBOXLENGTH, M_SKYBOXLENGTH, 1)));
     m_skyboxFace->draw();
 
-    glBindTexture(GL_TEXTURE_2D, m_yPosTexID);
+    glBindTexture(GL_TEXTURE_2D, m_skyTexID);
     m_phongShader->setUniform("m", glm::translate(glm::vec3(0, M_SKYBOXLENGTH - 2, 0)) * glm::rotate(3.14159f / 2.0f, glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(M_SKYBOXLENGTH, M_SKYBOXLENGTH, 1)));
     m_skyboxFace->draw();
     m_phongShader->setUniform("skybox", 0);
@@ -207,6 +195,7 @@ void WaluigiScene::generateColumns(int width, int height, float min, int k) {
     std::vector<glm::vec2> samplePoints;
     std::vector<glm::vec2> processList;
 
+    srand(m_time);
     glm::vec2 firstPoint = glm::vec2(static_cast<float>(rand()) / RAND_MAX * width,
             static_cast<float>(rand()) / RAND_MAX * height);
     samplePoints.push_back(firstPoint);
