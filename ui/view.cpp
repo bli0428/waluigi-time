@@ -368,6 +368,7 @@ void View::updateInputs() {
 
             if(vr::ButtonMaskFromId(vr::EVRButtonId::k_EButton_SteamVR_Trigger) == state.ulButtonPressed) {
                 //std::cout<<vr::ButtonMaskFromId(vr::EVRButtonId::k_EButton_SteamVR_Trigger)<<std::endl;
+                m_hmd->TriggerHapticPulse(deviceIndex, 0, 150);
             }
 
             if (state.ulButtonPressed) {

@@ -34,7 +34,7 @@ WaluigiScene::~WaluigiScene() {
 }
 
 void WaluigiScene::initScene() {
-    srand(m_time);
+    srand(20);
 
     // this is all texture stuff
     m_columnTexID = this->genTexture(":/images/images/columnx3.jpg");
@@ -44,6 +44,7 @@ void WaluigiScene::initScene() {
 
     // this is actual geometry stuff
     m_column = std::make_unique<Column>(30, 20);
+    m_target = std::make_unique<Cylinder>(1, 20, 1);
     m_skyboxFace = std::make_unique<Square>();
     this->generateColumns(M_FIELDLENGTH, M_FIELDLENGTH, M_COLUMNMINDIST, M_COLUMNK);
 }
@@ -129,6 +130,17 @@ void WaluigiScene::renderGeometry() {
     material.cAmbient = glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
     m_phongShader->applyMaterial(material);
 
+    // draw the targets
+    for (TargetNode node : m_targets) {
+        // @DAIN this is where all the matrices are made
+        glm::mat4x4 translate = glm::translate(node.pos);
+        glm::mat4x4 scale = glm::scale(glm::vec3(M_TARGETRADIUS, M_TARGETTHICKNESS, M_TARGETRADIUS));
+        glm::mat4x4 rotation = glm::rotate(node.radians, glm::vec3(0, 1, 0)) * glm::rotate(3.14159f / 2, glm::vec3(1, 0, 0));
+
+        m_phongShader->setUniform("m",  translate * rotation * scale);
+        m_target->draw();
+    }
+
     // draw the columns
     m_phongShader->setUniform("useTexture", 1);
     m_phongShader->setUniform("repeatBottomHalf", 1); // column-specific
@@ -141,7 +153,7 @@ void WaluigiScene::renderGeometry() {
         m_phongShader->setUniform("m", translate * scale);
         m_column->draw();
     }
-    m_phongShader->setUniform("repeatBottomHalf", 0); // unset the hack so other textures don't get weird
+    m_phongShader->setUniform("repeatBottomHalf", 0); // unset
 
     // draw the floor
     glBindTexture(GL_TEXTURE_2D, m_grassTexID);
@@ -174,6 +186,7 @@ void WaluigiScene::renderGeometry() {
     m_phongShader->setUniform("skybox", 0);
 
     m_time += 1.f / 60.f;
+    srand(m_time);
     drawBalls();
 
     drawHands();
@@ -250,8 +263,22 @@ void WaluigiScene::generateColumns(int width, int height, float min, int k) {
     }
 
     for (glm::vec2 point : samplePoints) {
+        // prevents generating on top of the dude
+        if (std::abs(point.x - M_FIELDLENGTH / 2) < 3 && std::abs(point.y - M_FIELDLENGTH / 2) < 3) {
+            continue;
+        }
+
+        float isColumn = static_cast<float>(rand()) / RAND_MAX;
         float r = static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f;
-        m_columns.push_back(ColumnNode{M_COLUMNHEIGHTAVG + r * M_COLUMNHEIGHTVAR, M_COLUMNRADIUSAVG, point.x - M_FIELDLENGTH / 2, point.y - M_FIELDLENGTH / 2});
+
+        if (isColumn < M_COLUMNTOTARGETRATIO) {
+            m_columns.push_back(ColumnNode{M_COLUMNHEIGHTAVG + r * M_COLUMNHEIGHTVAR, M_COLUMNRADIUSAVG, point.x - M_FIELDLENGTH / 2, point.y - M_FIELDLENGTH / 2});
+        } else {
+            glm::vec3 pos = glm::vec3(point.x - M_FIELDLENGTH / 2, M_TARGETHEIGHTAVG + r * M_TARGETHEIGHTVAR, point.y - M_FIELDLENGTH / 2);
+            m_targets.push_back(TargetNode{pos, glm::atan(pos.x, pos.z)});
+        }
+
+
     }
 }
 
