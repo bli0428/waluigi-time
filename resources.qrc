@@ -23,6 +23,7 @@
         <file>images/simon.png</file>
         <file>wah.wav</file>
         <file>images/ball.jpg</file>
+        <file>Wa-Elegy.mp3</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>

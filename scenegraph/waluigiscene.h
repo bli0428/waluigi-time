@@ -120,7 +120,7 @@ private:
     std::list<ShatterNode> m_shatters;
 
     QSoundEffect m_wah;
-    QSoundEffect m_music;
+    QMediaPlayer m_music;
 
     // CONSTANTS
     const int M_FIELDLENGTH = 40;

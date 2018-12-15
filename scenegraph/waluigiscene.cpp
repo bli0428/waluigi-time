@@ -67,9 +67,6 @@ void WaluigiScene::initScene() {
     // sound
     m_wah.setSource(QUrl::fromLocalFile("wah.wav"));
     m_wah.setVolume(0.25f);
-    m_music.setSource(QUrl::fromLocalFile("Wa-Elegy.wav"));
-    m_music.setVolume(0.25f);
-    m_music.play();
 
     // this is actual geometry stuff
     m_column = std::make_unique<Column>(30, 20);
@@ -372,8 +369,8 @@ void WaluigiScene::drawHands() {
         //m_testSphere = std::make_unique<Sphere>(20, 20, 20, 0.1f);
 
         CS123SceneMaterial material = CS123SceneMaterial();
-        material.cDiffuse = glm::vec4(0.7f, 0.f, 1.f, 1.f);
-        material.cAmbient = glm::vec4(0.2f, 0.f, 0.3f, 1.f);
+        material.cDiffuse = glm::vec4(0.9f, 0.9f, 0.9f, 1.f);
+        material.cAmbient = glm::vec4(0.3f, 0.3f, 0.3f, 1.f);
         m_material = material;
 
         didSetMaterial = true;
@@ -540,7 +537,6 @@ bool WaluigiScene::cylinderCollision(float cylHeight, float cylRad, glm::vec3 fi
         normal->x = glm::cos(theta2);
         normal->y = 0.f;
         normal->z = glm::sin(theta2);
-        std::cout << "side" << std::endl;
         return true;
     }
     //check top
@@ -552,7 +548,6 @@ bool WaluigiScene::cylinderCollision(float cylHeight, float cylRad, glm::vec3 fi
         normal->x = 0.f;
         normal->y = 1.f;
         normal->z = 0.f;
-        std::cout << "top" << std::endl;
         return true;
     }
     if(root <= cylRad && firePos.y >= -M_FIREBALLRADIUS && firePos.y <= cylHeight) {
@@ -562,7 +557,6 @@ bool WaluigiScene::cylinderCollision(float cylHeight, float cylRad, glm::vec3 fi
         normal->x = 0.f;
         normal->y = -1.f;
         normal->z = 0.f;
-        std::cout << "bot" << std::endl;
         return true;
     }
 
@@ -579,7 +573,6 @@ bool WaluigiScene::cylinderCollision(float cylHeight, float cylRad, glm::vec3 fi
             normal->x = glm::cos(theta2);
             normal->y = -1.f;
             normal->z = glm::sin(theta2);
-            std::cout << "bot cor" << std::endl;
             return true;
         }
     }
@@ -596,7 +589,6 @@ bool WaluigiScene::cylinderCollision(float cylHeight, float cylRad, glm::vec3 fi
             normal->x = glm::cos(theta2);
             normal->y = 1.f;
             normal->z = glm::sin(theta2);
-            std::cout << "top cor" << std::endl;
             return true;
         }
     }
