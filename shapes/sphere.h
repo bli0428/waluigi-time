@@ -21,6 +21,8 @@ private:
     void generateStrip(float phiStart, float phiEnd);
     SquareRingDrawer m_ringDrawer;
     float m_radius;
+
+    glm::vec2 getUV(glm::vec3 coord);
 };
 
 #endif // SPHERE_H

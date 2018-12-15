@@ -58,7 +58,34 @@ void Sphere::generateStrip(float phiStart, float phiEnd) {
     for (glm::vec3 coord : coords) {
         OpenGLShape::pushCoord(coord);
         OpenGLShape::pushCoord(coord * 2.f);
-        OpenGLShape::pushCoord(glm::vec2(0, 0));
+        OpenGLShape::pushCoord(getUV(coord));
     }
 }
 
+glm::vec2 Sphere::getUV(glm::vec3 point) {
+    float u;
+    float v;
+    float epsilon = 0.001f;
+
+    // top pole
+    if (std::abs(point.y - 0.5f) < epsilon) {
+        return glm::vec2(0.5f, 1.0f);
+
+    // bottom pole
+    } else if (std::abs(point.y + 0.5f) < epsilon) {
+        return glm::vec2(0.5f, 0.0f);
+    }
+
+    float theta = atan2(point.z, point.x);
+
+    if (theta < 0) {
+        u = -theta / (2 * M_PI);
+    } else {
+        u = 1.f - theta / (2 * M_PI);
+    }
+
+    float phi = glm::asin(2 * point.y);
+    v = 0.5f - phi / M_PI;
+
+    return glm::vec2(u, v);
+}

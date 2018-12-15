@@ -7,6 +7,7 @@
 #include "Cube.h"
 #include "square.h"
 #include <QSoundEffect>
+#include <QMediaPlayer>
 #include "shatter.h"
 #include "list"
 
@@ -20,6 +21,7 @@ struct ColumnNode {
 struct TargetNode {
     glm::vec3 pos;
     float radians;
+    int texIndex;
 };
 
 struct Fireball {
@@ -106,7 +108,8 @@ private:
     GLuint m_sideTexID;
     GLuint m_skyTexID;
     GLuint m_grassTexID;
-    GLuint m_targetTexID;
+    GLuint m_ballTexID;
+    std::vector<GLuint> m_targetTexIDs;
 
     std::unique_ptr<Column> m_column;
     std::unique_ptr<Cylinder> m_target;
@@ -117,6 +120,7 @@ private:
     std::list<ShatterNode> m_shatters;
 
     QSoundEffect m_wah;
+    QMediaPlayer m_music;
 
     // CONSTANTS
     const int M_FIELDLENGTH = 40;

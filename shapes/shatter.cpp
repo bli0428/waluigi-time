@@ -19,7 +19,7 @@ void Shatter::init() {
         float y = static_cast<float>(rand()) / RAND_MAX * 2 - 1;
         float x = std::sqrt(1 - y * y);
         float scale = static_cast<float>(rand()) / RAND_MAX * 2 - 1;
-        m_triangles.push_back(TriangleNode{glm::vec3(y * scale, x * glm::clamp(scale, 0.7f, 1.f), 0), glm::vec3(0, y, x), y * 5});
+        m_triangles.push_back(TriangleNode{glm::vec3(y * scale, x * glm::clamp(scale, 0.7f, 1.f), 0) * 4.0f, glm::vec3(0, y, x), y * 5});
     }
 }
 
@@ -30,7 +30,7 @@ void Shatter::draw(float time, glm::vec3 pos, CS123::GL::CS123Shader *shader) {
 
         float rad = glm::atan(pos.x, pos.z);
         glm::mat4x4 rotate = glm::rotate(t.omega * time, t.axis) * glm::rotate(rad, glm::vec3(0, 1, 0)) * glm::rotate(3.141592f / 2, glm::vec3(1, 0, 0));
-        glm::mat4x4 scale = glm::scale(glm::vec3(0.07f, 1, 0.07f));
+        glm::mat4x4 scale = glm::scale(glm::vec3(0.4f, 1, 0.4f));
         shader->setUniform("m", translate * rotate * scale);
         m_triangle->draw();
     }
