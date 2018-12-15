@@ -59,6 +59,7 @@ private:
     void drawBalls();
     void drawBall(Fireball *fireball);
     bool checkForCollision(Fireball *fireball, glm::vec4 newPos);
+    bool cylinderCollision(float cylHeight, float cylRad, glm::vec3 firePos, glm::vec3 *intersectPoint);
 
     void initScene();
     GLuint genTexture(std::string filePath);

@@ -115,7 +115,7 @@ OTHER_FILES += \
     shaders/texture.vert
 
 FORMS += ui/mainwindow.ui
-INCLUDEPATH += glm lib libraries libraries/openvr/headers shapes ui glew-1.10.0/include
+INCLUDEPATH += libraries\openvr\lib\win64 glm lib libraries libraries/openvr/headers shapes ui glew-1.10.0/include
 DEPENDPATH += glm lib libraries libraries/openvr/headers shapes ui glew-1.10.0/include
 
 DEFINES += _USE_MATH_DEFINES
