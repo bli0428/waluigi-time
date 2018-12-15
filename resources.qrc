@@ -9,6 +9,17 @@
         <file>images/sides.png</file>
         <file>images/sky.png</file>
         <file>images/grass.jpg</file>
-        <file>images/target.png</file>
+        <file>images/chrom.png</file>
+        <file>images/daisy.png</file>
+        <file>images/darksamus.png</file>
+        <file>images/incineroar.png</file>
+        <file>images/inkling.png</file>
+        <file>images/isabelle.png</file>
+        <file>images/ken.png</file>
+        <file>images/krool.png</file>
+        <file>images/plant.png</file>
+        <file>images/richter.png</file>
+        <file>images/ridley.png</file>
+        <file>images/simon.png</file>
     </qresource>
 </RCC>

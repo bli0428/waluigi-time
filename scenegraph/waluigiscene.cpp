@@ -19,7 +19,6 @@ WaluigiScene::WaluigiScene() : SceneviewScene(),
   m_sideTexID(0),
   m_skyTexID(0),
   m_grassTexID(0),
-  m_targetTexID(0),
   m_time(0.f),
   m_testNum(1),
   m_leftPressed(false),
@@ -33,7 +32,9 @@ WaluigiScene::~WaluigiScene() {
     glDeleteTextures(1, &m_sideTexID);
     glDeleteTextures(1, &m_skyTexID);
     glDeleteTextures(1, &m_grassTexID);
-    glDeleteTextures(1, &m_targetTexID);
+    for (GLuint id : m_targetTexIDs) {
+        glDeleteTextures(1, &id);
+    }
 }
 
 void WaluigiScene::initScene() {
@@ -44,7 +45,18 @@ void WaluigiScene::initScene() {
     m_skyTexID = this->genTexture(":/images/images/sky.png");
     m_sideTexID = this->genTexture(":/images/images/sides.png");
     m_grassTexID = this->genTexture(":/images/images/grass.jpg");
-    m_targetTexID = this->genTexture(":/images/images/target.png");
+    m_targetTexIDs.push_back(this->genTexture(":/images/images/plant.png"));
+    m_targetTexIDs.push_back(this->genTexture(":/images/images/daisy.png"));
+    m_targetTexIDs.push_back(this->genTexture(":/images/images/darksamus.png"));
+    m_targetTexIDs.push_back(this->genTexture(":/images/images/incineroar.png"));
+    m_targetTexIDs.push_back(this->genTexture(":/images/images/inkling.png"));
+    m_targetTexIDs.push_back(this->genTexture(":/images/images/isabelle.png"));
+    m_targetTexIDs.push_back(this->genTexture(":/images/images/ken.png"));
+    m_targetTexIDs.push_back(this->genTexture(":/images/images/krool.png"));
+    m_targetTexIDs.push_back(this->genTexture(":/images/images/richter.png"));
+    m_targetTexIDs.push_back(this->genTexture(":/images/images/ridley.png"));
+    m_targetTexIDs.push_back(this->genTexture(":/images/images/simon.png"));
+    m_targetTexIDs.push_back(this->genTexture(":/images/images/chrom.png"));
 
     // this is actual geometry stuff
     m_column = std::make_unique<Column>(30, 20);
@@ -151,9 +163,9 @@ void WaluigiScene::renderGeometry() {
     m_phongShader->setUniform("repeatBottomHalf", 0); // unset
 
     // draw the targets
-    glBindTexture(GL_TEXTURE_2D, m_targetTexID);
     m_phongShader->setUniform("repeatUV", glm::vec2(1, 1));
     for (TargetNode node : m_targets) {
+        glBindTexture(GL_TEXTURE_2D, m_targetTexIDs[node.texIndex]);
         // @DAIN this is where all the matrices are made
         glm::mat4x4 translate = glm::translate(node.pos);
         glm::mat4x4 scale = glm::scale(glm::vec3(M_TARGETRADIUS, M_TARGETTHICKNESS, M_TARGETRADIUS));
@@ -298,7 +310,8 @@ void WaluigiScene::generateColumns(int width, int height, float min, int k) {
             m_columns.push_back(ColumnNode{M_COLUMNHEIGHTAVG + r * M_COLUMNHEIGHTVAR, M_COLUMNRADIUSAVG, point.x - M_FIELDLENGTH / 2, point.y - M_FIELDLENGTH / 2});
         } else {
             glm::vec3 pos = glm::vec3(point.x - M_FIELDLENGTH / 2, M_TARGETHEIGHTAVG + r * M_TARGETHEIGHTVAR, point.y - M_FIELDLENGTH / 2);
-            m_targets.push_back(TargetNode{pos, glm::atan(pos.x, pos.z)});
+            int index = static_cast<float>(rand()) / RAND_MAX * 12;
+            m_targets.push_back(TargetNode{pos, glm::atan(pos.x, pos.z), index});
         }
 
 
