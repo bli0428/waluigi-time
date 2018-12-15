@@ -57,7 +57,7 @@ void WaluigiScene::initScene() {
     m_target = std::make_unique<Cylinder>(1, 20, 1);
     m_skyboxFace = std::make_unique<Square>();
     m_shatter = std::make_unique<Shatter>();
-    m_shatters.push_back(ShatterNode{m_time, glm::vec3(1, 1.5f, 1)});
+
     this->generateColumns(M_FIELDLENGTH, M_FIELDLENGTH, M_COLUMNMINDIST, M_COLUMNK);
 }
 
@@ -501,6 +501,7 @@ bool WaluigiScene::checkForCollision(Fireball *fireball, glm::vec4 newPos) {
 }
 
 void WaluigiScene::hitTarget(TargetNode target, int index) {
+    m_shatters.push_back(ShatterNode{m_time, target.pos});
     m_targets.erase(m_targets.begin() + index);
 
 }
@@ -517,29 +518,26 @@ bool WaluigiScene::cylinderCollision(float cylHeight, float cylRad, glm::vec3 fi
         normal->x = glm::cos(theta2);
         normal->y = 0.f;
         normal->z = glm::sin(theta2);
-        std::cout << "side" << std::endl;
         return true;
     }
     //check top
     float root = glm::sqrt((firePos.x * firePos.x) + (firePos.z * firePos.z));
-    if(root <= cylRad && firePos.y <= cylHeight + M_FIREBALLRADIUS && firePos.y >= cylHeight / 2.f) {
+    if(root <= cylRad && firePos.y <= cylHeight + M_FIREBALLRADIUS && firePos.y >= cylHeight) {
         intersectPoint->x = firePos.x;
         intersectPoint->y = cylHeight;
         intersectPoint->z = firePos.z;
         normal->x = 0.f;
         normal->y = 1.f;
         normal->z = 0.f;
-        std::cout << "top" << std::endl;
         return true;
     }
-    if(root <= cylRad && firePos.y >= -M_FIREBALLRADIUS && firePos.y <= cylHeight / 2.f) {
+    if(root <= cylRad && firePos.y >= -M_FIREBALLRADIUS && firePos.y <= cylHeight) {
         intersectPoint->x = firePos.x;
         intersectPoint->y = 0;
         intersectPoint->z = firePos.z;
         normal->x = 0.f;
         normal->y = -1.f;
         normal->z = 0.f;
-        std::cout << "bot" << std::endl;
         return true;
     }
 
@@ -556,7 +554,6 @@ bool WaluigiScene::cylinderCollision(float cylHeight, float cylRad, glm::vec3 fi
             normal->x = glm::cos(theta2);
             normal->y = -1.f;
             normal->z = glm::sin(theta2);
-            std::cout << "bot cor" << std::endl;
             return true;
         }
     }
@@ -573,7 +570,6 @@ bool WaluigiScene::cylinderCollision(float cylHeight, float cylRad, glm::vec3 fi
             normal->x = glm::cos(theta2);
             normal->y = 1.f;
             normal->z = glm::sin(theta2);
-            std::cout << "top cor" << std::endl;
             return true;
         }
     }
