@@ -7,6 +7,7 @@
 #include "QImage"
 #include "stdlib.h"
 #include "algorithm"
+#include "chrono"
 
 /**
  * @brief WaluigiScene::WaluigiScene
@@ -18,6 +19,7 @@ WaluigiScene::WaluigiScene() : SceneviewScene(),
   m_sideTexID(0),
   m_skyTexID(0),
   m_grassTexID(0),
+  m_targetTexID(0),
   m_time(0.f),
   m_testNum(1),
   m_leftPressed(false),
@@ -31,16 +33,18 @@ WaluigiScene::~WaluigiScene() {
     glDeleteTextures(1, &m_sideTexID);
     glDeleteTextures(1, &m_skyTexID);
     glDeleteTextures(1, &m_grassTexID);
+    glDeleteTextures(1, &m_targetTexID);
 }
 
 void WaluigiScene::initScene() {
-    srand(20);
+    srand(std::chrono::system_clock::now().time_since_epoch().count());
 
     // this is all texture stuff
     m_columnTexID = this->genTexture(":/images/images/columnx3.jpg");
     m_skyTexID = this->genTexture(":/images/images/sky.png");
     m_sideTexID = this->genTexture(":/images/images/sides.png");
     m_grassTexID = this->genTexture(":/images/images/grass.jpg");
+    m_targetTexID = this->genTexture(":/images/images/target.png");
 
     // this is actual geometry stuff
     m_column = std::make_unique<Column>(30, 20);
@@ -130,17 +134,6 @@ void WaluigiScene::renderGeometry() {
     material.cAmbient = glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
     m_phongShader->applyMaterial(material);
 
-    // draw the targets
-    for (TargetNode node : m_targets) {
-        // @DAIN this is where all the matrices are made
-        glm::mat4x4 translate = glm::translate(node.pos);
-        glm::mat4x4 scale = glm::scale(glm::vec3(M_TARGETRADIUS, M_TARGETTHICKNESS, M_TARGETRADIUS));
-        glm::mat4x4 rotation = glm::rotate(node.radians, glm::vec3(0, 1, 0)) * glm::rotate(3.14159f / 2, glm::vec3(1, 0, 0));
-
-        m_phongShader->setUniform("m",  translate * rotation * scale);
-        m_target->draw();
-    }
-
     // draw the columns
     m_phongShader->setUniform("useTexture", 1);
     m_phongShader->setUniform("repeatBottomHalf", 1); // column-specific
@@ -154,6 +147,19 @@ void WaluigiScene::renderGeometry() {
         m_column->draw();
     }
     m_phongShader->setUniform("repeatBottomHalf", 0); // unset
+
+    // draw the targets
+    glBindTexture(GL_TEXTURE_2D, m_targetTexID);
+    m_phongShader->setUniform("repeatUV", glm::vec2(1, 1));
+    for (TargetNode node : m_targets) {
+        // @DAIN this is where all the matrices are made
+        glm::mat4x4 translate = glm::translate(node.pos);
+        glm::mat4x4 scale = glm::scale(glm::vec3(M_TARGETRADIUS, M_TARGETTHICKNESS, M_TARGETRADIUS));
+        glm::mat4x4 rotation = glm::rotate(node.radians, glm::vec3(0, 1, 0)) * glm::rotate(3.14159f / 2, glm::vec3(1, 0, 0));
+
+        m_phongShader->setUniform("m",  translate * rotation * scale);
+        m_target->draw();
+    }
 
     // draw the floor
     glBindTexture(GL_TEXTURE_2D, m_grassTexID);
@@ -193,7 +199,7 @@ void WaluigiScene::renderGeometry() {
 }
 
 /**
- * @brief WaluigiScene::generateColumns Adds ColumnNodes to the thing. Uses poisson disk sampling.
+ * @brief WaluigiScene::generateColumns Adds ColumnNodes and TargetNodes to the thing. Uses poisson disk sampling.
  * @param width Width of area to generate columsn in
  * @param height Height ^
  * @param min Minimum distance between columns

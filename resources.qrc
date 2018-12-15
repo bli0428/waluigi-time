@@ -9,5 +9,6 @@
         <file>images/sides.png</file>
         <file>images/sky.png</file>
         <file>images/grass.jpg</file>
+        <file>images/target.png</file>
     </qresource>
 </RCC>

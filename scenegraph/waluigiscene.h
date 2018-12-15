@@ -97,6 +97,7 @@ private:
     GLuint m_sideTexID;
     GLuint m_skyTexID;
     GLuint m_grassTexID;
+    GLuint m_targetTexID;
 
     std::unique_ptr<Column> m_column;
     std::unique_ptr<Cylinder> m_target;
