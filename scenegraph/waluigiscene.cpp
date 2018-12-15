@@ -50,6 +50,8 @@ void WaluigiScene::initScene() {
     m_column = std::make_unique<Column>(30, 20);
     m_target = std::make_unique<Cylinder>(1, 20, 1);
     m_skyboxFace = std::make_unique<Square>();
+    m_shatter = std::make_unique<Shatter>();
+    m_shatters.push_back(ShatterNode{m_time, glm::vec3(1, 1.5f, 1)});
     this->generateColumns(M_FIELDLENGTH, M_FIELDLENGTH, M_COLUMNMINDIST, M_COLUMNK);
 }
 
@@ -191,11 +193,22 @@ void WaluigiScene::renderGeometry() {
     m_skyboxFace->draw();
     m_phongShader->setUniform("skybox", 0);
 
+
+    // TEST
+    glBindTexture(GL_TEXTURE_2D, 0);
+    m_phongShader->setUniform("useTexture", 0);
+
+    for (ShatterNode node : m_shatters) {
+        m_shatter->draw(m_time - node.spawnTime, node.pos, m_phongShader.get());
+    }
+
     m_time += 1.f / 60.f;
-    srand(m_time);
     drawBalls();
 
     drawHands();
+
+
+
 }
 
 /**
@@ -251,7 +264,7 @@ void WaluigiScene::generateColumns(int width, int height, float min, int k) {
                 cellsToCheck.push_back(gridIndex - cellsAcross - 1); // northwest
 
                 for (int neighboring : cellsToCheck) {
-                    if (grid[neighboring].x >= 0) {
+                    if (neighboring >= 0 && grid[neighboring].x >= 0) {
                         if (glm::distance(glm::vec2(pointAttempt.x, pointAttempt.y), glm::vec2(grid[neighboring].x, grid[neighboring].y)) < min) {
                             isValid = false;
                             break;
@@ -328,8 +341,8 @@ void WaluigiScene::drawHands() {
         //m_testSphere = std::make_unique<Sphere>(20, 20, 20, 0.1f);
 
         CS123SceneMaterial material = CS123SceneMaterial();
-        material.cDiffuse = glm::vec4(1.f, 0.f, 1.f, 1.f);
-        material.cAmbient = glm::vec4(0.3f, 0.f, 0.3f, 1.f);
+        material.cDiffuse = glm::vec4(0.7f, 0.f, 1.f, 1.f);
+        material.cAmbient = glm::vec4(0.2f, 0.f, 0.3f, 1.f);
         m_material = material;
 
         didSetMaterial = true;

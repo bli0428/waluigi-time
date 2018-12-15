@@ -6,6 +6,7 @@
 #include "sphere.h"
 #include "Cube.h"
 #include "square.h"
+#include "shatter.h"
 
 struct ColumnNode {
    float height;
@@ -26,6 +27,11 @@ struct Fireball {
     glm::vec3 velocity;
     glm::vec3 position;
     CS123SceneLightData light;
+};
+
+struct ShatterNode {
+    float spawnTime;
+    glm::vec3 pos;
 };
 
 class WaluigiScene : public SceneviewScene
@@ -101,9 +107,11 @@ private:
 
     std::unique_ptr<Column> m_column;
     std::unique_ptr<Cylinder> m_target;
+    std::unique_ptr<Shatter> m_shatter;
     std::unique_ptr<Square> m_skyboxFace;
     std::vector<ColumnNode> m_columns;
     std::vector<TargetNode> m_targets;
+    std::vector<ShatterNode> m_shatters;
 
     // CONSTANTS
     const int M_FIELDLENGTH = 80;
