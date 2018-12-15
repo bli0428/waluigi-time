@@ -39,10 +39,13 @@ WaluigiScene::~WaluigiScene() {
     }
 }
 
+/**
+ * @brief WaluigiScene::initScene Initializes and sets up the scene
+ */
 void WaluigiScene::initScene() {
-    srand(std::chrono::system_clock::now().time_since_epoch().count());
+    srand(std::chrono::system_clock::now().time_since_epoch().count()); // random seed
 
-    // this is all texture stuff
+    // load textures
     m_columnTexID = this->genTexture(":/images/images/columnx3.jpg");
     m_skyTexID = this->genTexture(":/images/images/sky.png");
     m_sideTexID = this->genTexture(":/images/images/sides.png");
@@ -61,7 +64,7 @@ void WaluigiScene::initScene() {
     m_targetTexIDs.push_back(this->genTexture(":/images/images/simon.png"));
     m_targetTexIDs.push_back(this->genTexture(":/images/images/chrom.png"));
 
-    // sound?
+    // sound
     m_wah.setSource(QUrl::fromLocalFile("wah.wav"));
     m_wah.setVolume(0.25f);
     m_music.setSource(QUrl::fromLocalFile("Wa-Elegy.wav"));
