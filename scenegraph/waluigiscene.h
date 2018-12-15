@@ -6,6 +6,7 @@
 #include "sphere.h"
 #include "Cube.h"
 #include "square.h"
+#include <QSoundEffect>
 
 struct ColumnNode {
    float height;
@@ -65,6 +66,7 @@ private:
     void drawBall(Fireball *fireball);
     bool checkForCollision(Fireball *fireball, glm::vec4 newPos);
     bool cylinderCollision(float cylHeight, float cylRad, glm::vec3 firePos, glm::vec3 *intersectPoint, glm::vec3 *normal);
+    void hitTarget(TargetNode target, int index);
 
     void initScene();
     GLuint genTexture(std::string filePath);
@@ -105,23 +107,25 @@ private:
     std::vector<ColumnNode> m_columns;
     std::vector<TargetNode> m_targets;
 
+    QSoundEffect m_wah;
+
     // CONSTANTS
-    const int M_FIELDLENGTH = 80;
-    const float M_COLUMNMINDIST = 6.0f; // min dist between columns
+    const int M_FIELDLENGTH = 40;
+    const float M_COLUMNMINDIST = 3.0f; // min dist between columns
     const float M_COLUMNK = 40; // columns generated on each run of poisson; higher = more clustered usually
     const float M_COLUMNHEIGHTAVG = 17.0f;
     const float M_COLUMNHEIGHTVAR = 8.0f; // variance of columns' heights (note: they are uniformly distributed, not normally)
-    const float M_COLUMNRADIUSAVG = 1.4f;
+    const float M_COLUMNRADIUSAVG = 1.0f;
     const int M_SKYBOXLENGTH = 200;
 
     const float M_GRAV = -6.f;
     const float M_FIREBALLRADIUS = .1f;
 
-    const float M_TARGETRADIUS = 2.0f;
+    const float M_TARGETRADIUS = 1.0f;
     const float M_TARGETTHICKNESS = 0.2f;
     const float M_TARGETHEIGHTAVG = 5.0f;
     const float M_TARGETHEIGHTVAR = 3.0f;
-    const float M_COLUMNTOTARGETRATIO = 0.66f;
+    const float M_COLUMNTOTARGETRATIO = 0.4f;
 
 };
 

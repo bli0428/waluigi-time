@@ -10,5 +10,6 @@
         <file>images/sky.png</file>
         <file>images/grass.jpg</file>
         <file>images/target.png</file>
+        <file>wah.wav</file>
     </qresource>
 </RCC>
