@@ -7,6 +7,7 @@
 #include "Cube.h"
 #include "square.h"
 #include <QSoundEffect>
+#include <QMediaPlayer>
 #include "shatter.h"
 #include "list"
 
@@ -107,6 +108,7 @@ private:
     GLuint m_sideTexID;
     GLuint m_skyTexID;
     GLuint m_grassTexID;
+    GLuint m_ballTexID;
     std::vector<GLuint> m_targetTexIDs;
 
     std::unique_ptr<Column> m_column;
@@ -118,6 +120,7 @@ private:
     std::list<ShatterNode> m_shatters;
 
     QSoundEffect m_wah;
+    QSoundEffect m_music;
 
     // CONSTANTS
     const int M_FIELDLENGTH = 40;

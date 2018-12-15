@@ -22,5 +22,7 @@
         <file>images/ridley.png</file>
         <file>images/simon.png</file>
         <file>wah.wav</file>
+        <file>images/ball.jpg</file>
     </qresource>
+    <qresource prefix="/"/>
 </RCC>

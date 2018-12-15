@@ -20,6 +20,7 @@ WaluigiScene::WaluigiScene() : SceneviewScene(),
   m_skyTexID(0),
   m_grassTexID(0),
   m_time(0.f),
+  m_ballTexID(0),
   m_testNum(1),
   m_leftPressed(false),
   m_rightPressed(false)
@@ -32,6 +33,7 @@ WaluigiScene::~WaluigiScene() {
     glDeleteTextures(1, &m_sideTexID);
     glDeleteTextures(1, &m_skyTexID);
     glDeleteTextures(1, &m_grassTexID);
+    glDeleteTextures(1, &m_ballTexID);
     for (GLuint id : m_targetTexIDs) {
         glDeleteTextures(1, &id);
     }
@@ -45,6 +47,7 @@ void WaluigiScene::initScene() {
     m_skyTexID = this->genTexture(":/images/images/sky.png");
     m_sideTexID = this->genTexture(":/images/images/sides.png");
     m_grassTexID = this->genTexture(":/images/images/grass.jpg");
+    m_ballTexID = this->genTexture(":/images/images/ball.jpg");
     m_targetTexIDs.push_back(this->genTexture(":/images/images/plant.png"));
     m_targetTexIDs.push_back(this->genTexture(":/images/images/daisy.png"));
     m_targetTexIDs.push_back(this->genTexture(":/images/images/darksamus.png"));
@@ -61,15 +64,15 @@ void WaluigiScene::initScene() {
     // sound?
     m_wah.setSource(QUrl::fromLocalFile("wah.wav"));
     m_wah.setVolume(0.25f);
-
-    m_targets.push_back(TargetNode{glm::vec3(2, 2, 2), 3.14159f/2});
+    m_music.setSource(QUrl::fromLocalFile("Wa-Elegy.wav"));
+    m_music.setVolume(0.25f);
+    m_music.play();
 
     // this is actual geometry stuff
     m_column = std::make_unique<Column>(30, 20);
     m_target = std::make_unique<Cylinder>(1, 20, 1);
     m_skyboxFace = std::make_unique<Square>();
     m_shatter = std::make_unique<Shatter>();
-    m_shatters.push_back(ShatterNode{m_time, glm::vec3(1, 1.5f, 1)});
     this->generateColumns(M_FIELDLENGTH, M_FIELDLENGTH, M_COLUMNMINDIST, M_COLUMNK);
 }
 
@@ -219,7 +222,7 @@ void WaluigiScene::renderGeometry() {
         m_shatter->draw(m_time - node.spawnTime, node.pos, m_phongShader.get());
     }
 
-    if (m_time - m_shatters.front().spawnTime > 2.0f) {
+    if (m_shatters.size() > 0 && m_time - m_shatters.front().spawnTime > 2.0f) {
         m_shatters.pop_front();
     }
 
@@ -415,10 +418,14 @@ void WaluigiScene::drawBall(Fireball *fireball) {
     else {
         fireball->light.pos = func;
     }
+
     //m_phongShader->setLight(fireball->light);
     m_phongShader->setUniform("m", glm::translate(func.xyz()));
     m_phongShader->applyMaterial(m_material);
     fireball->prevTime = fireball->time;
+
+    m_phongShader->setUniform("useTexture", 1);
+    glBindTexture(GL_TEXTURE_2D, m_ballTexID);
     m_ball->draw();
 }
 
@@ -514,8 +521,8 @@ bool WaluigiScene::checkForCollision(Fireball *fireball, glm::vec4 newPos) {
 }
 
 void WaluigiScene::hitTarget(TargetNode target, int index) {
+    m_shatters.push_back(ShatterNode{m_time, target.pos});
     m_targets.erase(m_targets.begin() + index);
-
 }
 
 bool WaluigiScene::cylinderCollision(float cylHeight, float cylRad, glm::vec3 firePos, glm::vec3 *intersectPoint, glm::vec3 *normal) {
@@ -535,7 +542,7 @@ bool WaluigiScene::cylinderCollision(float cylHeight, float cylRad, glm::vec3 fi
     }
     //check top
     float root = glm::sqrt((firePos.x * firePos.x) + (firePos.z * firePos.z));
-    if(root <= cylRad && firePos.y <= cylHeight + M_FIREBALLRADIUS && firePos.y >= cylHeight / 2.f) {
+    if(root <= cylRad && firePos.y <= cylHeight + M_FIREBALLRADIUS && firePos.y >= cylHeight) {
         intersectPoint->x = firePos.x;
         intersectPoint->y = cylHeight;
         intersectPoint->z = firePos.z;
@@ -545,7 +552,7 @@ bool WaluigiScene::cylinderCollision(float cylHeight, float cylRad, glm::vec3 fi
         std::cout << "top" << std::endl;
         return true;
     }
-    if(root <= cylRad && firePos.y >= -M_FIREBALLRADIUS && firePos.y <= cylHeight / 2.f) {
+    if(root <= cylRad && firePos.y >= -M_FIREBALLRADIUS && firePos.y <= cylHeight) {
         intersectPoint->x = firePos.x;
         intersectPoint->y = 0;
         intersectPoint->z = firePos.z;
