@@ -328,8 +328,8 @@ void WaluigiScene::drawHands() {
         //m_testSphere = std::make_unique<Sphere>(20, 20, 20, 0.1f);
 
         CS123SceneMaterial material = CS123SceneMaterial();
-        material.cDiffuse = glm::vec4(1.f, 0.f, 0.f, 1.f);
-        material.cAmbient = glm::vec4(0.3f, 0.f, 0.f, 1.f);
+        material.cDiffuse = glm::vec4(1.f, 0.f, 1.f, 1.f);
+        material.cAmbient = glm::vec4(0.3f, 0.f, 0.3f, 1.f);
         m_material = material;
 
         didSetMaterial = true;
@@ -553,7 +553,7 @@ void WaluigiScene::setTrigger(int controllerNum, bool pressed) {
             CS123SceneLightData light = CS123SceneLightData();
             light.type = LightType::LIGHT_POINT;
             light.pos = glm::vec4(pos, 1.f);
-            light.color = glm::vec4(0.f, 1.f, 1.f, 1.f);
+            light.color = glm::vec4(1.f, 0.f, 1.f, 1.f);
             light.function = glm::vec3(0.f, 1.f, 0.f);
             Fireballs.append(new Fireball{0.f, 0.f, 0.f, m_leftVel, pos, light});
         }
