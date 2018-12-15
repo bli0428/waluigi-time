@@ -202,6 +202,10 @@ void WaluigiScene::renderGeometry() {
         m_shatter->draw(m_time - node.spawnTime, node.pos, m_phongShader.get());
     }
 
+    if (m_time - m_shatters.front().spawnTime > 2.0f) {
+        m_shatters.pop_front();
+    }
+
     m_time += 1.f / 60.f;
     drawBalls();
 

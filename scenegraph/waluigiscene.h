@@ -7,6 +7,7 @@
 #include "Cube.h"
 #include "square.h"
 #include "shatter.h"
+#include "list"
 
 struct ColumnNode {
    float height;
@@ -111,7 +112,7 @@ private:
     std::unique_ptr<Square> m_skyboxFace;
     std::vector<ColumnNode> m_columns;
     std::vector<TargetNode> m_targets;
-    std::vector<ShatterNode> m_shatters;
+    std::list<ShatterNode> m_shatters;
 
     // CONSTANTS
     const int M_FIELDLENGTH = 80;
