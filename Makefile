@@ -213,8 +213,10 @@ Makefile: final.pro C:/Qt/5.7/mingw53_32/mkspecs/win32-g++/qmake.conf C:/Qt/5.7/
 		C:/Qt/5.7/mingw53_32/lib/qtmaind.prl \
 		C:/Qt/5.7/mingw53_32/lib/Qt5OpenGL.prl \
 		C:/Qt/5.7/mingw53_32/lib/Qt5Widgets.prl \
+		C:/Qt/5.7/mingw53_32/lib/Qt5Multimedia.prl \
 		C:/Qt/5.7/mingw53_32/lib/Qt5Gui.prl \
 		C:/Qt/5.7/mingw53_32/lib/Qt5Xml.prl \
+		C:/Qt/5.7/mingw53_32/lib/Qt5Network.prl \
 		C:/Qt/5.7/mingw53_32/lib/Qt5Core.prl
 	$(QMAKE) -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" -o Makefile final.pro
 C:/Qt/5.7/mingw53_32/mkspecs/features/spec_pre.prf:
@@ -371,8 +373,10 @@ final.pro:
 C:/Qt/5.7/mingw53_32/lib/qtmaind.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5OpenGL.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5Widgets.prl:
+C:/Qt/5.7/mingw53_32/lib/Qt5Multimedia.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5Gui.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5Xml.prl:
+C:/Qt/5.7/mingw53_32/lib/Qt5Network.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5Core.prl:
 qmake: FORCE
 	@$(QMAKE) -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" -o Makefile final.pro

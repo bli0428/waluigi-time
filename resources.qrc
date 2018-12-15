@@ -21,5 +21,6 @@
         <file>images/richter.png</file>
         <file>images/ridley.png</file>
         <file>images/simon.png</file>
+        <file>wah.wav</file>
     </qresource>
 </RCC>

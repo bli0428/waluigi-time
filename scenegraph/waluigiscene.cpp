@@ -58,6 +58,12 @@ void WaluigiScene::initScene() {
     m_targetTexIDs.push_back(this->genTexture(":/images/images/simon.png"));
     m_targetTexIDs.push_back(this->genTexture(":/images/images/chrom.png"));
 
+    // sound?
+    m_wah.setSource(QUrl::fromLocalFile("wah.wav"));
+    m_wah.setVolume(0.25f);
+
+    m_targets.push_back(TargetNode{glm::vec3(2, 2, 2), 3.14159f/2});
+
     // this is actual geometry stuff
     m_column = std::make_unique<Column>(30, 20);
     m_target = std::make_unique<Cylinder>(1, 20, 1);
@@ -168,10 +174,9 @@ void WaluigiScene::renderGeometry() {
         glBindTexture(GL_TEXTURE_2D, m_targetTexIDs[node.texIndex]);
         // @DAIN this is where all the matrices are made
         glm::mat4x4 translate = glm::translate(node.pos);
-        glm::mat4x4 scale = glm::scale(glm::vec3(M_TARGETRADIUS, M_TARGETTHICKNESS, M_TARGETRADIUS));
+        glm::mat4x4 scale = glm::scale(glm::vec3(M_TARGETRADIUS * 2, M_TARGETTHICKNESS, M_TARGETRADIUS * 2));
         glm::mat4x4 rotation = glm::rotate(node.radians, glm::vec3(0, 1, 0)) * glm::rotate(3.14159f / 2, glm::vec3(1, 0, 0));
-
-        m_phongShader->setUniform("m",  translate * rotation * scale);
+        m_phongShader->setUniform("m", translate * rotation * scale);
         m_target->draw();
     }
 
@@ -298,13 +303,16 @@ void WaluigiScene::generateColumns(int width, int height, float min, int k) {
     }
 
     for (glm::vec2 point : samplePoints) {
+        float r = static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f;
+
         // prevents generating on top of the dude
         if (std::abs(point.x - M_FIELDLENGTH / 2) < 3 && std::abs(point.y - M_FIELDLENGTH / 2) < 3) {
             continue;
+            //            glm::vec3 pos = glm::vec3(point.x - M_FIELDLENGTH / 2, M_TARGETHEIGHTAVG + r * M_TARGETHEIGHTVAR, point.y - M_FIELDLENGTH / 2);
+//            m_targets.push_back(TargetNode{pos, glm::atan(pos.x, pos.z)});
         }
 
         float isColumn = static_cast<float>(rand()) / RAND_MAX;
-        float r = static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f;
 
         if (isColumn < M_COLUMNTOTARGETRATIO) {
             m_columns.push_back(ColumnNode{M_COLUMNHEIGHTAVG + r * M_COLUMNHEIGHTVAR, M_COLUMNRADIUSAVG, point.x - M_FIELDLENGTH / 2, point.y - M_FIELDLENGTH / 2});
@@ -415,6 +423,9 @@ void WaluigiScene::drawBall(Fireball *fireball) {
 }
 
 bool WaluigiScene::checkForCollision(Fireball *fireball, glm::vec4 newPos) {
+
+    bool collision = false;
+
     if(newPos.y <= .1f) {
         float time = fireball->time;
         glm::vec3 vel = fireball->velocity;
@@ -425,7 +436,7 @@ bool WaluigiScene::checkForCollision(Fireball *fireball, glm::vec4 newPos) {
         newPos = glm::vec4(fireball->position, 1.f);
         fireball->velocity = glm::vec3(vel.x, .75f * -(vel.y + (M_GRAV * time)) , vel.z);
         fireball->time = 0.f;
-        return true;
+        collision = true;
     }
     //loop through each cylinder and check for collisions
     for(int i = 0; i < m_columns.size(); i++) {
@@ -452,32 +463,63 @@ bool WaluigiScene::checkForCollision(Fireball *fireball, glm::vec4 newPos) {
                 vel = glm::vec3(vel.x, vel.y + (M_GRAV * time) , vel.z);
                 fireball->velocity = glm::reflect(vel, normal);
                 fireball->time = 0.f;
-                return true;
+                collision = true;
+
+                break;
             }
-            break;
         }
     }
 
-    /*for(int i = 0; i < m_targets.size(); i++) {
-        Target t = m_targets[i];
-        if(glm::distance(glm::vec3(c.pos), glm::vec2(newPos.xyz())) < t.radius + M_FIREBALLRADIUS) {
+    for(int i = 0; i < m_targets.size(); i++) {
+        TargetNode t = m_targets[i];
+        if(glm::distance(t.pos, newPos.xyz()) < M_TARGETRADIUS + M_FIREBALLRADIUS) {
 
             //transform cylinder to origin
             //transform sphere similarly
             glm::vec3 point = glm::vec3(0, 0, 0);
-            glm::vec3 firePos = newPos.xyz();
-            firePos.x = firePos.x - t.x;
-            firePos.y = firePos.y - t.y;
-            firePos.z = firePos.z - t.z;
-            if(cylinderCollision(c.height - 2.f, c.radius, firePos, &point)) {
+            glm::vec3 normal = glm::vec3(0, 0, 0);
 
+            glm::mat4x4 rotation = glm::rotate(t.radians, glm::vec3(0, 1, 0)) * glm::rotate(3.14159f / 2, glm::vec3(1, 0, 0));
+
+            glm::vec3 firePos = newPos.xyz();
+            firePos.x = firePos.x - t.pos.x;
+            firePos.y = firePos.y - t.pos.y;
+            firePos.z = firePos.z - t.pos.z;
+
+            firePos = glm::inverse(glm::mat3x3(rotation)) * firePos;
+
+            if(cylinderCollision(M_TARGETTHICKNESS, M_TARGETRADIUS, firePos.xyz(), &point, &normal)) {
+                normal = glm::normalize(glm::mat3x3(rotation) * normal);
+
+                float time = fireball->time;
+                glm::vec3 vel = fireball->velocity;
+                glm::vec3 pos = fireball->position;
+                float prevTime = fireball->prevTime;
+
+                fireball->position = glm::vec3(pos.x + vel.x * prevTime, pos.y + (vel.y * prevTime) + (.5f * M_GRAV * prevTime * prevTime), pos.z + vel.z * prevTime);
+                newPos = glm::vec4(fireball->position, 1.f);
+                vel = glm::vec3(vel.x, vel.y + (M_GRAV * time) , vel.z);
+                fireball->velocity = glm::reflect(vel, normal);
+                fireball->time = 0.f;
+                collision = true;
+
+                hitTarget(t, i);
+
+                break;
             }
-            break;
+
         }
-    }*/
+    }
+    return collision;
+}
+
+void WaluigiScene::hitTarget(TargetNode target, int index) {
+    m_targets.erase(m_targets.begin() + index);
+
 }
 
 bool WaluigiScene::cylinderCollision(float cylHeight, float cylRad, glm::vec3 firePos, glm::vec3 *intersectPoint, glm::vec3 *normal) {
+
     //check side
     if(firePos.y >= 0.f && firePos.y <= cylHeight) {
         intersectPoint->y = firePos.y;
@@ -488,35 +530,38 @@ bool WaluigiScene::cylinderCollision(float cylHeight, float cylRad, glm::vec3 fi
         normal->x = glm::cos(theta2);
         normal->y = 0.f;
         normal->z = glm::sin(theta2);
+        std::cout << "side" << std::endl;
         return true;
     }
     //check top
-    else if(glm::sqrt((firePos.x * firePos.x) + (firePos.z * firePos.z)) <= cylRad) {
-        if(firePos.y <= cylHeight + M_FIREBALLRADIUS && firePos.y >= cylHeight) {
-            intersectPoint->x = firePos.x;
-            intersectPoint->y = cylHeight;
-            intersectPoint->z = firePos.z;
-            normal->x = 0.f;
-            normal->y = 1.f;
-            normal->z = 0.f;
-            return true;
-        }
-        else if(firePos.y >= -M_FIREBALLRADIUS && firePos.y <= 0.f) {
-            intersectPoint->x = firePos.x;
-            intersectPoint->y = 0;
-            intersectPoint->z = firePos.z;
-            normal->x = 0.f;
-            normal->y = -1.f;
-            normal->z = 0.f;
-            return true;
-        }
+    float root = glm::sqrt((firePos.x * firePos.x) + (firePos.z * firePos.z));
+    if(root <= cylRad && firePos.y <= cylHeight + M_FIREBALLRADIUS && firePos.y >= cylHeight / 2.f) {
+        intersectPoint->x = firePos.x;
+        intersectPoint->y = cylHeight;
+        intersectPoint->z = firePos.z;
+        normal->x = 0.f;
+        normal->y = 1.f;
+        normal->z = 0.f;
+        std::cout << "top" << std::endl;
+        return true;
     }
+    if(root <= cylRad && firePos.y >= -M_FIREBALLRADIUS && firePos.y <= cylHeight / 2.f) {
+        intersectPoint->x = firePos.x;
+        intersectPoint->y = 0;
+        intersectPoint->z = firePos.z;
+        normal->x = 0.f;
+        normal->y = -1.f;
+        normal->z = 0.f;
+        std::cout << "bot" << std::endl;
+        return true;
+    }
+
     //check bottom corner
-    else if(firePos.y < 0.f){
+    if(firePos.y < 0.f){
         float theta = glm::atan(firePos.x / firePos.z);
         float x = cylRad * glm::cos(theta);
         float z = cylRad * glm::sin(theta);
-        if(glm::sqrt((x * x) + (z * z)) <= M_FIREBALLRADIUS) {
+        if(glm::distance(glm::vec3(x, 0.f, z), firePos) <= M_FIREBALLRADIUS) {
             intersectPoint->x = x;
             intersectPoint->y = 0;
             intersectPoint->z = z;
@@ -524,15 +569,16 @@ bool WaluigiScene::cylinderCollision(float cylHeight, float cylRad, glm::vec3 fi
             normal->x = glm::cos(theta2);
             normal->y = -1.f;
             normal->z = glm::sin(theta2);
+            std::cout << "bot cor" << std::endl;
             return true;
         }
     }
     //check top corner
-    else if(firePos.y > cylHeight) {
+    if(firePos.y > cylHeight) {
         float theta = glm::atan(firePos.x / firePos.z);
         float x = cylRad * glm::cos(theta);
         float z = cylRad * glm::sin(theta);
-        if(glm::sqrt((x * x) + (z * z)) <= M_FIREBALLRADIUS) {
+        if(glm::distance(glm::vec3(x, cylHeight, z), firePos) <= M_FIREBALLRADIUS) {
             intersectPoint->x = x;
             intersectPoint->y = cylHeight;
             intersectPoint->z = z;
@@ -540,6 +586,7 @@ bool WaluigiScene::cylinderCollision(float cylHeight, float cylRad, glm::vec3 fi
             normal->x = glm::cos(theta2);
             normal->y = 1.f;
             normal->z = glm::sin(theta2);
+            std::cout << "top cor" << std::endl;
             return true;
         }
     }
@@ -575,10 +622,13 @@ void WaluigiScene::setRightHandVelocity(glm::vec3 velocity) {
 }
 
 void WaluigiScene::setTrigger(int controllerNum, bool pressed) {
+
+
     if(controllerNum == 0) {
         //left hand
         m_leftPressed = pressed;
         if(!pressed /*&& glm::length(m_leftVel) > 1.f*/) {
+            m_wah.play();
             glm::vec3 pos = glm::vec3(m_leftHand.matrix[3][0], m_leftHand.matrix[3][1], m_leftHand.matrix[3][2]);
             CS123SceneLightData light = CS123SceneLightData();
             light.type = LightType::LIGHT_POINT;
@@ -592,6 +642,7 @@ void WaluigiScene::setTrigger(int controllerNum, bool pressed) {
         //right hand
         m_rightPressed = pressed;
         if(!pressed /*&& glm::length(m_rightVel) > 1.f*/) {
+            m_wah.play();
             glm::vec3 pos = glm::vec3(m_rightHand.matrix[3][0], m_rightHand.matrix[3][1], m_rightHand.matrix[3][2]);
             CS123SceneLightData light = CS123SceneLightData();
             light.type = LightType::LIGHT_POINT;
