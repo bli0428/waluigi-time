@@ -45,6 +45,12 @@ WaluigiScene::~WaluigiScene() {
 void WaluigiScene::initScene() {
     srand(std::chrono::system_clock::now().time_since_epoch().count()); // random seed
 
+    CS123SceneMaterial material = CS123SceneMaterial();
+    material.cDiffuse = glm::vec4(0.9f, 0.9f, 0.9f, 1.f);
+    material.cAmbient = glm::vec4(0.6f, 0.6f, 0.6f, 1.f);
+    m_material = material;
+    m_phongShader->applyMaterial(m_material);
+
     // load textures
     m_columnTexID = this->genTexture(":/images/images/columnx3.jpg");
     m_skyTexID = this->genTexture(":/images/images/sky.png");
@@ -68,11 +74,13 @@ void WaluigiScene::initScene() {
     m_wah.setSource(QUrl::fromLocalFile("wah.wav"));
     m_wah.setVolume(0.25f);
 
-    // this is actual geometry stuff
+    // initialize our shapes (for flyweight pattern later)
     m_column = std::make_unique<Column>(30, 20);
     m_target = std::make_unique<Cylinder>(1, 20, 1);
     m_skyboxFace = std::make_unique<Square>();
     m_shatter = std::make_unique<Shatter>();
+
+    // procedurally generate the coordinates/data for the scene
     this->generateColumns(M_FIELDLENGTH, M_FIELDLENGTH, M_COLUMNMINDIST, M_COLUMNK);
 }
 
@@ -147,21 +155,29 @@ GLuint WaluigiScene::genTexture(std::string filePath) {
 //    render(projectionMatrix, viewMatrix);
 //}
 
-
+/**
+ * @brief WaluigiScene::renderGeometry Draws the geometry of the scene
+ */
 void WaluigiScene::renderGeometry() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_phongShader->setUniform("m", glm::scale(glm::vec3(1, 5, 1)));
-    CS123SceneMaterial material = CS123SceneMaterial();
-    material.cDiffuse = glm::vec4(0.9f, 0.9f, 0.9f, 1.0f);
-    material.cAmbient = glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
-    m_phongShader->applyMaterial(material);
+    this->drawColumns();
+    this->drawTargets();
+    this->drawEnvironment();
+    this->drawShatters();
+    m_time += 1.f / 60.f;
+    drawBalls();
+    drawHands();
+}
 
+/**
+ * @brief WaluigiScene::drawColumns Draw columns, called by renderGeometry, which is called 60 times a second
+ */
+void WaluigiScene::drawColumns() {
     // draw the columns
     m_phongShader->setUniform("useTexture", 1);
     m_phongShader->setUniform("repeatBottomHalf", 1); // column-specific
     glBindTexture(GL_TEXTURE_2D, m_columnTexID);
-    // only draws the same column for now; will explore about other options
     for (ColumnNode node : m_columns) {
         m_phongShader->setUniform("repeatUV", glm::vec2(std::ceil(node.radius * 4), node.height / 2));
         glm::mat4x4 translate = glm::translate(glm::vec3(node.x, node.height / 2.0f - 2, node.z));
@@ -170,23 +186,30 @@ void WaluigiScene::renderGeometry() {
         m_column->draw();
     }
     m_phongShader->setUniform("repeatBottomHalf", 0); // unset
+}
 
+/**
+ * @brief WaluigiScene::drawTargetsW Draw targets, called by renderGeometry, which is called 60 times a second
+ */
+void WaluigiScene::drawTargets() {
     // draw the targets
     m_phongShader->setUniform("repeatUV", glm::vec2(1, 1));
     for (TargetNode node : m_targets) {
         glBindTexture(GL_TEXTURE_2D, m_targetTexIDs[node.texIndex]);
-        // @DAIN this is where all the matrices are made
         glm::mat4x4 translate = glm::translate(node.pos);
         glm::mat4x4 scale = glm::scale(glm::vec3(M_TARGETRADIUS * 2, M_TARGETTHICKNESS, M_TARGETRADIUS * 2));
         glm::mat4x4 rotation = glm::rotate(node.radians, glm::vec3(0, 1, 0)) * glm::rotate(3.14159f / 2, glm::vec3(1, 0, 0));
         m_phongShader->setUniform("m", translate * rotation * scale);
         m_target->draw();
     }
+}
 
+/**
+ * @brief WaluigiScene::drawEnvironment Draws the surrounding environment, the skybox and the floor, called by renderGeometry (which is called 60 times a second)
+ */
+void WaluigiScene::drawEnvironment() {
     // draw the floor
     glBindTexture(GL_TEXTURE_2D, m_grassTexID);
-    material.cAmbient = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
-    m_phongShader->applyMaterial(material);
     m_phongShader->setUniform("repeatUV", glm::vec2(60, 60));
     m_phongShader->setUniform("m", glm::rotate(3.14159f * 1.5f, glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(300, 300, 1)));
     m_skyboxFace->draw();
@@ -212,12 +235,14 @@ void WaluigiScene::renderGeometry() {
     m_phongShader->setUniform("m", glm::translate(glm::vec3(0, M_SKYBOXLENGTH - 2, 0)) * glm::rotate(3.14159f / 2.0f, glm::vec3(-1, 0, 0)) * glm::scale(glm::vec3(M_SKYBOXLENGTH, M_SKYBOXLENGTH, 1)));
     m_skyboxFace->draw();
     m_phongShader->setUniform("skybox", 0);
+}
 
-
-    // TEST
+/**
+ * @brief WaluigiScene::drawShatters Draws the shattering effect caused by a target being hit by a ball, if any exist
+ */
+void WaluigiScene::drawShatters() {
     glBindTexture(GL_TEXTURE_2D, 0);
     m_phongShader->setUniform("useTexture", 0);
-
     for (ShatterNode node : m_shatters) {
         m_shatter->draw(m_time - node.spawnTime, node.pos, m_phongShader.get());
     }
@@ -225,14 +250,6 @@ void WaluigiScene::renderGeometry() {
     if (m_shatters.size() > 0 && m_time - m_shatters.front().spawnTime > 2.0f) {
         m_shatters.pop_front();
     }
-
-    m_time += 1.f / 60.f;
-    drawBalls();
-
-    drawHands();
-
-
-
 }
 
 /**
@@ -311,8 +328,6 @@ void WaluigiScene::generateColumns(int width, int height, float min, int k) {
         // prevents generating on top of the dude
         if (std::abs(point.x - M_FIELDLENGTH / 2) < 3 && std::abs(point.y - M_FIELDLENGTH / 2) < 3) {
             continue;
-            //            glm::vec3 pos = glm::vec3(point.x - M_FIELDLENGTH / 2, M_TARGETHEIGHTAVG + r * M_TARGETHEIGHTVAR, point.y - M_FIELDLENGTH / 2);
-//            m_targets.push_back(TargetNode{pos, glm::atan(pos.x, pos.z)});
         }
 
         float isColumn = static_cast<float>(rand()) / RAND_MAX;
@@ -345,7 +360,6 @@ glm::vec2 WaluigiScene::randPointAround(glm::vec2 newPoint, float min) {
 void WaluigiScene::setLights() {
     CS123SceneLightData light = CS123SceneLightData();
     light.type = LightType::LIGHT_POINT;
-    //light.pos = glm::vec4(5.f, 10.f, 5.f, 1.f);
     light.pos = glm::vec4(10.f, 1.f, 10.f, 1.f);
     light.color = glm::vec4(1.f, 1.f, 1.f, 1.f);
     light.function = glm::vec3(1.f, 0.f, 0.f);
@@ -368,10 +382,7 @@ void WaluigiScene::drawHands() {
         m_handShape = std::make_unique<Sphere>(4, 4, 4, 0.1f);
         //m_testSphere = std::make_unique<Sphere>(20, 20, 20, 0.1f);
 
-        CS123SceneMaterial material = CS123SceneMaterial();
-        material.cDiffuse = glm::vec4(0.9f, 0.9f, 0.9f, 1.f);
-        material.cAmbient = glm::vec4(0.3f, 0.3f, 0.3f, 1.f);
-        m_material = material;
+
 
         didSetMaterial = true;
         updateControllerMaterial(m_leftHand);
@@ -429,6 +440,12 @@ void WaluigiScene::drawBall(Fireball *fireball) {
     m_ball->draw();
 }
 
+/**
+ * @brief WaluigiScene::checkForCollision Checks if the given fireball collides with anything in the scene
+ * @param fireball
+ * @param newPos
+ * @return
+ */
 bool WaluigiScene::checkForCollision(Fireball *fireball, glm::vec4 newPos) {
 
     bool collision = false;
@@ -477,6 +494,7 @@ bool WaluigiScene::checkForCollision(Fireball *fireball, glm::vec4 newPos) {
         }
     }
 
+    // now loop through targets
     for(int i = 0; i < m_targets.size(); i++) {
         TargetNode t = m_targets[i];
         if(glm::distance(t.pos, newPos.xyz()) < M_TARGETRADIUS + M_FIREBALLRADIUS) {
@@ -520,11 +538,25 @@ bool WaluigiScene::checkForCollision(Fireball *fireball, glm::vec4 newPos) {
     return collision;
 }
 
+/**
+ * @brief WaluigiScene::hitTarget Gets called whenever a ball hits a target
+ * @param target
+ * @param index
+ */
 void WaluigiScene::hitTarget(TargetNode target, int index) {
     m_shatters.push_back(ShatterNode{m_time, target.pos});
     m_targets.erase(m_targets.begin() + index);
 }
 
+/**
+ * @brief WaluigiScene::cylinderCollision Gets called to see if a ball intersects with a cylinder
+ * @param cylHeight
+ * @param cylRad
+ * @param firePos
+ * @param intersectPoint
+ * @param normal
+ * @return
+ */
 bool WaluigiScene::cylinderCollision(float cylHeight, float cylRad, glm::vec3 firePos, glm::vec3 *intersectPoint, glm::vec3 *normal) {
 
     //check side

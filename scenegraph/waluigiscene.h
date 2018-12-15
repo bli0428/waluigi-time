@@ -77,6 +77,11 @@ private:
     bool cylinderCollision(float cylHeight, float cylRad, glm::vec3 firePos, glm::vec3 *intersectPoint, glm::vec3 *normal);
     void hitTarget(TargetNode target, int index);
 
+    void drawColumns();
+    void drawTargets();
+    void drawEnvironment();
+    void drawShatters();
+
     void initScene();
     GLuint genTexture(std::string filePath);
     void generateColumns(int width, int height, float min, int k);

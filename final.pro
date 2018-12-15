@@ -117,7 +117,8 @@ DEFINES += GLM_SWIZZLE GLM_FORCE_RADIANS
 OTHER_FILES += \
     shaders/* \
     shaders/texture.frag \
-    shaders/texture.vert
+    shaders/texture.vert \
+    README.txt
 
 FORMS += ui/mainwindow.ui
 INCLUDEPATH += libraries\openvr\lib\win64 glm lib libraries libraries/openvr/headers shapes ui glew-1.10.0/include
