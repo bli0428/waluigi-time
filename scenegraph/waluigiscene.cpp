@@ -56,6 +56,8 @@ void WaluigiScene::initScene() {
     m_column = std::make_unique<Column>(30, 20);
     m_target = std::make_unique<Cylinder>(1, 20, 1);
     m_skyboxFace = std::make_unique<Square>();
+    m_shatter = std::make_unique<Shatter>();
+    m_shatters.push_back(ShatterNode{m_time, glm::vec3(1, 1.5f, 1)});
     this->generateColumns(M_FIELDLENGTH, M_FIELDLENGTH, M_COLUMNMINDIST, M_COLUMNK);
 }
 
@@ -196,11 +198,26 @@ void WaluigiScene::renderGeometry() {
     m_skyboxFace->draw();
     m_phongShader->setUniform("skybox", 0);
 
+
+    // TEST
+    glBindTexture(GL_TEXTURE_2D, 0);
+    m_phongShader->setUniform("useTexture", 0);
+
+    for (ShatterNode node : m_shatters) {
+        m_shatter->draw(m_time - node.spawnTime, node.pos, m_phongShader.get());
+    }
+
+    if (m_time - m_shatters.front().spawnTime > 2.0f) {
+        m_shatters.pop_front();
+    }
+
     m_time += 1.f / 60.f;
-    srand(m_time);
     drawBalls();
 
     drawHands();
+
+
+
 }
 
 /**
@@ -336,8 +353,8 @@ void WaluigiScene::drawHands() {
         //m_testSphere = std::make_unique<Sphere>(20, 20, 20, 0.1f);
 
         CS123SceneMaterial material = CS123SceneMaterial();
-        material.cDiffuse = glm::vec4(1.f, 0.f, 0.f, 1.f);
-        material.cAmbient = glm::vec4(0.3f, 0.f, 0.f, 1.f);
+        material.cDiffuse = glm::vec4(0.7f, 0.f, 1.f, 1.f);
+        material.cAmbient = glm::vec4(0.2f, 0.f, 0.3f, 1.f);
         m_material = material;
 
         didSetMaterial = true;
@@ -603,7 +620,7 @@ void WaluigiScene::setTrigger(int controllerNum, bool pressed) {
             CS123SceneLightData light = CS123SceneLightData();
             light.type = LightType::LIGHT_POINT;
             light.pos = glm::vec4(pos, 1.f);
-            light.color = glm::vec4(0.f, 1.f, 1.f, 1.f);
+            light.color = glm::vec4(1.f, 0.f, 1.f, 1.f);
             light.function = glm::vec3(0.f, 1.f, 0.f);
             Fireballs.append(new Fireball{0.f, 0.f, 0.f, m_leftVel, pos, light});
         }
