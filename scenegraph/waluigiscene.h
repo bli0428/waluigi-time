@@ -8,6 +8,7 @@
 #include "square.h"
 #include <QSoundEffect>
 #include <QMediaPlayer>
+#include <QMediaPlaylist>
 #include "shatter.h"
 #include "list"
 
@@ -125,7 +126,9 @@ private:
     std::list<ShatterNode> m_shatters;
 
     QSoundEffect m_wah;
-    QMediaPlayer m_music;
+
+    QMediaPlaylist *m_playlist;
+    QMediaPlayer* m_wallelujah;
 
     // CONSTANTS
     const int M_FIELDLENGTH = 40;

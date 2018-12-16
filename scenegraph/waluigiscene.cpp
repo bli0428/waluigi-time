@@ -8,6 +8,9 @@
 #include "stdlib.h"
 #include "algorithm"
 #include "chrono"
+#include "qobject.h"
+#include <windows.h>
+#include "mmsystem.h"
 
 /**
  * @brief WaluigiScene::WaluigiScene
@@ -29,6 +32,8 @@ WaluigiScene::WaluigiScene() : SceneviewScene(),
 }
 
 WaluigiScene::~WaluigiScene() {
+    delete m_wallelujah;
+    delete m_playlist;
     glDeleteTextures(1, &m_columnTexID);
     glDeleteTextures(1, &m_sideTexID);
     glDeleteTextures(1, &m_skyTexID);
@@ -73,6 +78,21 @@ void WaluigiScene::initScene() {
     // sound
     m_wah.setSource(QUrl::fromLocalFile("wah.wav"));
     m_wah.setVolume(0.25f);
+
+    m_playlist = new QMediaPlaylist();
+    m_playlist->addMedia(QUrl("qrc:/sounds/backgroundmusic.mp3"));
+    m_playlist->setPlaybackMode(QMediaPlaylist::Loop);
+
+    m_wallelujah = new QMediaPlayer();
+    m_wallelujah->setPlaylist(m_playlist);
+    m_wallelujah->play();
+
+
+    m_wallelujah = new QMediaPlayer;
+    m_wallelujah->setMedia(QUrl::fromLocalFile("Wa-Elegy.mp3"));
+    m_wallelujah->setVolume(100);
+
+    m_wallelujah->play();
 
     // initialize our shapes (for flyweight pattern later)
     m_column = std::make_unique<Column>(30, 20);

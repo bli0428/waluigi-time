@@ -153,11 +153,11 @@ defineTest(copyToDestdir) {
 win32 {
     contains(QT_ARCH, i386) {
         message("32 bit build")
-            LIBS += -L$$PWD/libraries/openvr/lib/win32/ -lopenvr_api
+            LIBS += -L$$PWD/libraries/openvr/lib/win32/ -lopenvr_api -lwinmm
             copyToDestdir($$PWD/libraries/openvr/bin/win32/openvr_api.dll)
     } else {
         message("64 bit build")
-            LIBS += -L$$PWD/libraries/openvr/lib/win64/ -lopenvr_api
+            LIBS += -L$$PWD/libraries/openvr/lib/win64/ -lopenvr_api -lwinmm
             copyToDestdir($$PWD/libraries/openvr/bin/win64/openvr_api.dll)
     }
 }
