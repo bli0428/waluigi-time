@@ -385,10 +385,6 @@ void WaluigiScene::setLights() {
     light.function = glm::vec3(1.f, 0.f, 0.f);
     light.id = 0;
     m_phongShader->setLight(light);
-
-    for (auto fireball : Fireballs) {
-        m_phongShader->setLight(fireball->light);
-    }
 }
 
 /**
@@ -424,13 +420,10 @@ void WaluigiScene::drawBalls() {
     for(int i = 0; i < Fireballs.size(); i++) {
         float t = Fireballs[i]->spawnTime;
         if(t > 10.f) {
-            Fireballs[i]->light.color = glm::vec4(0.f, 0.f, 0.f, 1.f);
-            m_phongShader->setLight(Fireballs[i]->light);
             delete Fireballs[i];
             Fireballs.removeAt(i);
         }
         else {
-            Fireballs[i]->light.id = i + 1;
             drawBall(Fireballs[i]);
         }
     }
@@ -443,14 +436,8 @@ void WaluigiScene::drawBall(Fireball *fireball) {
     glm::vec3 pos = fireball->position;
     glm::vec4 func = glm::vec4(pos.x + vel.x * time, pos.y + (vel.y * time) + (.5f * M_GRAV * time * time), pos.z + vel.z * time, 1.f);
 
-    if(checkForCollision(fireball, func)) {
-        fireball->light.pos = glm::vec4(fireball->position, 1.f);
-    }
-    else {
-        fireball->light.pos = func;
-    }
+    checkForCollision(fireball, func);
 
-    //m_phongShader->setLight(fireball->light);
     m_phongShader->setUniform("m", glm::translate(func.xyz()));
     m_phongShader->applyMaterial(m_material);
     fireball->prevTime = fireball->time;
@@ -689,7 +676,7 @@ void WaluigiScene::setTrigger(int controllerNum, bool pressed) {
             light.pos = glm::vec4(pos, 1.f);
             light.color = glm::vec4(1.f, 0.f, 1.f, 1.f);
             light.function = glm::vec3(0.f, 1.f, 0.f);
-            Fireballs.append(new Fireball{0.f, 0.f, 0.f, m_leftVel, pos, light});
+            Fireballs.append(new Fireball{0.f, 0.f, 0.f, 1.5f * m_leftVel, pos});
         }
     }
     else if(controllerNum == 1) {
@@ -703,7 +690,7 @@ void WaluigiScene::setTrigger(int controllerNum, bool pressed) {
             light.pos = glm::vec4(pos, 1.f);
             light.color = glm::vec4(0.f, 1.f, 1.f, 1.f);
             light.function = glm::vec3(0.f, 1.f, 0.f);
-            Fireballs.append(new Fireball{0.f, 0.f, 0.f, m_rightVel, pos, light});
+            Fireballs.append(new Fireball{0.f, 0.f, 0.f, 1.5f * m_rightVel, pos});
         }
     }
     else {

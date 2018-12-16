@@ -31,7 +31,6 @@ struct Fireball {
     float spawnTime;
     glm::vec3 velocity;
     glm::vec3 position;
-    CS123SceneLightData light;
 };
 
 struct ShatterNode {
@@ -44,12 +43,6 @@ class WaluigiScene : public SceneviewScene
 public:
     WaluigiScene();
     virtual ~WaluigiScene() override;
-//    virtual void render(glm::mat4x4 projectionMatrix, glm::mat4x4 viewMatrix) override;
-//    virtual void render(
-//            glm::mat4x4 projectionMatrix,
-//            glm::mat4x4 viewMatrix,
-//            glm::mat4 m_mat4DevicePose [vr::k_unMaxTrackedDeviceCount],
-//            bool m_activeTrackedDevice[vr::k_unMaxTrackedDeviceCount]) override;
 
     void setLeftHand(glm::mat4x4 transform);
     void setRightHand(glm::mat4x4 transform);
