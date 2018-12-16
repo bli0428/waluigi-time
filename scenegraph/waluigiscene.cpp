@@ -78,6 +78,9 @@ void WaluigiScene::initScene() {
     // sound
     m_wah.setSource(QUrl::fromLocalFile("wah.wav"));
     m_wah.setVolume(0.25f);
+    m_targetBreak.setSource(QUrl::fromLocalFile("hitsound.wav"));
+    m_bounce.setSource(QUrl::fromLocalFile("bounce.wav"));
+    m_bounce.setVolume(0.5f);
 
     m_playlist = new QMediaPlaylist();
     m_playlist->addMedia(QUrl("qrc:/sounds/backgroundmusic.mp3"));
@@ -117,63 +120,6 @@ GLuint WaluigiScene::genTexture(std::string filePath) {
 
     return id;
 }
-
-
-//void WaluigiScene::render(glm::mat4x4 projectionMatrix, glm::mat4x4 viewMatrix) {
-//    m_phongShader->bind();
-//    setSceneUniforms(projectionMatrix, viewMatrix);
-//    setLights();
-//    renderGeometry();
-//    glBindTexture(GL_TEXTURE_2D, 0);
-//    m_phongShader->unbind();
-//}
-
-//void WaluigiScene::render(
-//    glm::mat4x4 projectionMatrix,
-//    glm::mat4x4 viewMatrix,
-//    glm::mat4 m_mat4DevicePose[vr::k_unMaxTrackedDeviceCount],
-//    bool m_activeTrackedDevice[vr::k_unMaxTrackedDeviceCount]) {
-
-//    setClearColor();
-//    unsigned int gBuffer;
-//    glGenBuffers(1, &gBuffer);
-//    glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//    unsigned int gPosition, gNormal, gAlbedoSpec;
-
-//    glGenTextures(1, &gPosition);
-//    glBindTexture(GL_TEXTURE_2D, gPosition);
-//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_eyeWidth, m_eyeHeight, 0, GL_RGB, GL_FLOAT, NULL);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
-
-//    glGenTextures(1, &gNormal);
-//    glBindTexture(GL_TEXTURE_2D, gNormal);
-//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_eyeWidth, m_eyeHeight, 0, GL_RGB, GL_FLOAT, NULL);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
-
-//    glGenTextures(1, &gAlbedoSpec);
-//    glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
-//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_eyeWidth, m_eyeHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
-
-//    unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-//    glDrawBuffers(3, attachments);
-
-//    m_phongShader->bind();
-//    setLights();
-//    renderGeometry();
-//    glBindTexture(GL_TEXTURE_2D, 0);
-//    m_phongShader->unbind();
-
-//    // TODO: use controller positions if necessary
-//    render(projectionMatrix, viewMatrix);
-//}
 
 /**
  * @brief WaluigiScene::renderGeometry Draws the geometry of the scene
@@ -468,6 +414,7 @@ bool WaluigiScene::checkForCollision(Fireball *fireball, glm::vec4 newPos) {
         fireball->velocity = glm::vec3(vel.x, .75f * -(vel.y + (M_GRAV * time)) , vel.z);
         fireball->time = 0.f;
         collision = true;
+        //m_bounce.play();
     }
     //loop through each cylinder and check for collisions
     for(int i = 0; i < m_columns.size(); i++) {
@@ -495,6 +442,7 @@ bool WaluigiScene::checkForCollision(Fireball *fireball, glm::vec4 newPos) {
                 fireball->velocity = glm::reflect(vel, normal);
                 fireball->time = 0.f;
                 collision = true;
+                //m_bounce.play();
 
                 break;
             }
@@ -535,6 +483,8 @@ bool WaluigiScene::checkForCollision(Fireball *fireball, glm::vec4 newPos) {
                 fireball->time = 0.f;
                 collision = true;
 
+                m_targetBreak.setVolume(0.5f);
+                m_targetBreak.play();
                 hitTarget(t, i);
 
                 break;

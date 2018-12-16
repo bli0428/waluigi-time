@@ -52,7 +52,6 @@ public:
 
     void setEyeHeight(uint32_t height);
     void setEyeWidth(uint32_t width);
-
     QList<Fireball*> Fireballs;
 
 
@@ -117,8 +116,11 @@ private:
     std::vector<ColumnNode> m_columns;
     std::vector<TargetNode> m_targets;
     std::list<ShatterNode> m_shatters;
+    glm::vec3 m_position;
 
     QSoundEffect m_wah;
+    QSoundEffect m_targetBreak;
+    QSoundEffect m_bounce;
 
     QMediaPlaylist *m_playlist;
     QMediaPlayer* m_wallelujah;
